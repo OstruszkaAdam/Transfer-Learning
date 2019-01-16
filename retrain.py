@@ -51,7 +51,7 @@ MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
 # path to folders of labeled images
 TRAINING_IMAGES_DIR = os.getcwd() + '/training_images'
 
-TEST_IMAGES_DIR = os.getcwd() + "/test_images/"
+TEST_IMAGES_INPUT_DIR = os.getcwd() + "/test_images_input/"
 
 # where to save the trained graph
 OUTPUT_GRAPH = os.getcwd() + '/' + 'retrained_graph.pb'
@@ -383,9 +383,9 @@ def checkIfNecessaryPathsAndFilesExist():
     # end for
 
     # if the test images directory does not exist, show and error message and bail
-    if not os.path.exists(TEST_IMAGES_DIR):
+    if not os.path.exists(TEST_IMAGES_INPUT_DIR):
         print('')
-        print('ERROR: TEST_IMAGES_DIR "' + TEST_IMAGES_DIR + '" does not seem to exist')
+        print('ERROR: TEST_IMAGES_DIR "' + TEST_IMAGES_INPUT_DIR + '" does not seem to exist')
         print('Did you break out some test images?')
         print('')
         return False
@@ -393,7 +393,7 @@ def checkIfNecessaryPathsAndFilesExist():
 
     # count how many images are in the test images directory
     numImagesInTestDir = 0
-    for fileName in os.listdir(TEST_IMAGES_DIR):
+    for fileName in os.listdir(TEST_IMAGES_INPUT_DIR):
         if fileName.endswith(".jpg"):
             numImagesInTestDir += 1
         # end if
@@ -401,7 +401,7 @@ def checkIfNecessaryPathsAndFilesExist():
 
     # if there are not enough images in the test images directory, show an error and return false
     if numImagesInTestDir < MIN_NUM_IMAGES_REQUIRED_FOR_TESTING:
-        print("ERROR: there are not at least " + str(MIN_NUM_IMAGES_REQUIRED_FOR_TESTING) + " images in " + TEST_IMAGES_DIR)
+        print("ERROR: there are not at least " + str(MIN_NUM_IMAGES_REQUIRED_FOR_TESTING) + " images in " + TEST_IMAGES_INPUT_DIR)
         print("Did you break out some test images?")
         return False
     # end if

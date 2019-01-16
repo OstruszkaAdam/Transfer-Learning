@@ -9,7 +9,8 @@ import cv2
 RETRAINED_LABELS_TXT_FILE_LOC = os.getcwd() + "/" + "retrained_labels.txt"
 RETRAINED_GRAPH_PB_FILE_LOC = os.getcwd() + "/" + "retrained_graph.pb"
 
-TEST_IMAGES_DIR = os.getcwd() + "/test_images"
+TEST_IMAGES_INPUT_DIR = os.getcwd() + "/test_images_input"
+TEST_IMAGES_OUTPUT_DIR = os.getcwd() + "/test_images_output/"
 
 # definovani, jakou barvu maji mit popisky fotek
 # POZOR: v OpenCV nejsou barvy v pořadí RGB, ale BGR
@@ -24,9 +25,12 @@ TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE = 0
 
 #######################################################################################################################
 
-# TODO výpis výstupu do souboru
+# TODO výpis výstupu do souboru předělat čistěji, aby v kódu nebyly zdvojené řádky
 
 def main():
+    # otevreni (pripadne vytvoreni) souboru na ukladani vystupu z konzole
+    outputFile = open(TEST_IMAGES_OUTPUT_DIR + "test_output.txt", "w") # a = pripsat na konec, w = pripsat
+
     print("probiha spousteni programu . . .")
 
     if not checkIfNecessaryPathsAndFilesExist():
@@ -57,7 +61,7 @@ def main():
     # end with
 
     # if the test image directory listed above is not valid, show an error message and bail
-    if not os.path.isdir(TEST_IMAGES_DIR):
+    if not os.path.isdir(TEST_IMAGES_INPUT_DIR):
         print("the test image directory does not seem to be a valid directory, check file / directory paths")
         return
     # end if
@@ -65,25 +69,28 @@ def main():
     with tf.Session() as sess:
 
         # for each file in the test images directory . . .
-        for fileName in os.listdir(TEST_IMAGES_DIR):
+        for fileName in os.listdir(TEST_IMAGES_INPUT_DIR):
             # if the file does not end in .jpg or .jpeg (case-insensitive), continue with the next iteration of the for loop
             if not (fileName.lower().endswith(".jpg") or fileName.lower().endswith(".jpeg")):
                 continue
             # end if
 
             print("-----------------------------------------------------------------")
+            outputFile.write("\n-----------------------------------------------------------------")
 
             # show the file name on std out
             print("zpracovava se soubor " + fileName)
+            outputFile.write("\nzpracovava se soubor " + fileName)
 
             # get the file name and full path of the current image file
-            imageFileWithPath = os.path.join(TEST_IMAGES_DIR, fileName)
+            imageFileWithPath = os.path.join(TEST_IMAGES_INPUT_DIR, fileName)
             # attempt to open the image with OpenCV
             openCVImage = cv2.imread(imageFileWithPath)
 
             # if we were not able to successfully open the image, continue with the next iteration of the for loop
             if openCVImage is None:
                 print("unable to open " + fileName + " as an OpenCV image")
+                outputFile.write("\nunable to open " + fileName + " as an OpenCV image")
                 continue
             # end if
 
@@ -120,6 +127,7 @@ def main():
                     scoreAsAPercent = confidence * 100.0
                     # show the result to std out
                     print("program zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
+                    outputFile.write("\nprogram zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # write the result on the image
                     writeResultOnImage(openCVImage, fileName, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # finally we can show the OpenCV image
@@ -131,6 +139,7 @@ def main():
 
                 # for any prediction, show the confidence as a ratio to five decimal places
                 print(strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
+                outputFile.write("\n" + strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
             # end for
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
@@ -146,13 +155,16 @@ def main():
     tfFileWriter.add_graph(sess.graph)
     tfFileWriter.close()
 
+    #zavreni textoveho soubory, kam se ukladaly konzolove vypisy
+    outputFile.close()
+
 # end main
 
 #######################################################################################################################
 def checkIfNecessaryPathsAndFilesExist():
-    if not os.path.exists(TEST_IMAGES_DIR):
+    if not os.path.exists(TEST_IMAGES_INPUT_DIR):
         print('')
-        print('ERROR: TEST_IMAGES_DIR "' + TEST_IMAGES_DIR + '" does not seem to exist')
+        print('ERROR: TEST_IMAGES_DIR "' + TEST_IMAGES_INPUT_DIR + '" does not seem to exist')
         print('Did you set up the test images?')
         print('')
         return False
@@ -206,7 +218,7 @@ def writeResultOnImage(openCVImage, fileName, resultText):
     cv2.putText(openCVImage, resultText, (lowerLeftTextOriginX, lowerLeftTextOriginY), fontFace, fontScale, LABEL_FONT_COLOR, fontThickness, cv2.LINE_AA)
 
     # uložit výstupní obrázek
-    cv2.imwrite("test_images_output/output_" + fileName, openCVImage)
+    cv2.imwrite(TEST_IMAGES_OUTPUT_DIR + "output_" + fileName, openCVImage)
 # end function
 
 #######################################################################################################################
