@@ -1,7 +1,7 @@
-cd C:\Users\cdahms\Documents\TensorFlow_Tut_2_Classification_Walk-through
+cd C:\Users\Adam\PycharmProjects\Transfer_learning
 
-python retrain.py --bottleneck_dir="C:\tf_files" --how_many_training_steps=500 --model_dir="C:\tf_files" --output_graph="C:\tf_files\retrained_graph.pb" --output_labels="C:\tf_files\retrained_labels.txt" --image_dir="C:\tf_files\training_images"
+python retrain.py --bottleneck_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --how_many_training_steps=500 --model_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --output_graph="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_graph.pb" --output_labels="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_labels.txt" --image_dir="C:\Users\Adam\PycharmProjects\Transfer_learning\training_images"
 
-c:\tf_files\classify_image_graph_def.pb
+C:\Users\Adam\PycharmProjects\Transfer_learning\classify_image_graph_def.pb
 
 classify_image_graph_def.pb

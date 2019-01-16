@@ -20,6 +20,7 @@ This produces a new model file that can be loaded and run by any TensorFlow prog
 To use with TensorBoard:
 tensorboard --logdir /path/to/tensorboard_logs
 """
+import shutil
 from datetime import datetime
 import hashlib
 import os
@@ -69,7 +70,8 @@ TENSORBOARD_DIR = os.getcwd() + '/' + 'tensorboard_logs'
 
 # how many training steps to run before ending
 # NOTE: original Google default is 4000, use 4000 (or possibly higher) for production grade results
-HOW_MANY_TRAINING_STEPS=500
+HOW_MANY_TRAINING_STEPS=1
+# kroky jsou cislovany od 0 do n-1
 
 # how large a learning rate to use when training
 LEARNING_RATE = 0.01
@@ -122,10 +124,10 @@ RANDOM_CROP = 0
 # a percentage determining how much to randomly scale up the size of the training images by
 RANDOM_SCALE = 0
 
-# a percentage determining how much to randomly multiply the training image input pixels up or down by
+# a percentage determining how much to randomly multiply the training image input pixel colors up or down by
 RANDOM_BRIGHTNESS = 0
 
-# Which model architecture to use. 'inception_v3' is the most accurate, but also the slowest. For faster or smaller models, chose a MobileNet with
+# Which model architecture to use. 'inception_v3' is the most accurate, but also the slowest. For faster or smaller models, choose a MobileNet with
 # the form 'mobilenet_<parameter size>_<input_size>[_quantized]'. For example, 'mobilenet_1.0_224' will pick a model that is 17 MB in size and takes
 # 224 pixel input images, while 'mobilenet_0.25_128_quantized' will choose a much less accurate, but smaller and faster network that's 920 KB
 # on disk and takes 128x128 images. See https://research.googleblog.com/2017/06/mobilenets-open-source-models-for.html for more information on Mobilenet.
@@ -409,9 +411,12 @@ def checkIfNecessaryPathsAndFilesExist():
 
 #######################################################################################################################
 def prepare_file_system():
+
+
     # Setup the directory we'll write summaries to for TensorBoard
     if tf.gfile.Exists(TENSORBOARD_DIR):
-        tf.gfile.DeleteRecursively(TENSORBOARD_DIR)
+        shutil.rmtree(TENSORBOARD_DIR, ignore_errors=True)
+        #tf.gfile.DeleteRecursively(TENSORBOARD_DIR)
     # end if
     tf.gfile.MakeDirs(TENSORBOARD_DIR)
     if INTERMEDIATE_STORE_FREQUENCY > 0:
