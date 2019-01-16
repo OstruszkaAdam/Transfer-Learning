@@ -32,10 +32,10 @@ Popis a výsledky provedených pokusů
 
 Hodilo by se
 ---------
-[ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do souborů (tak aby se nepřepisovaly)
-[x] Aby _test.py_ automaticky projel všechny snímky ve složce najednou bez zásahu uživatele
-[ ] Automatické mazaní složek před spuštěním učení (logy už se mažou, zbývají _bottleneck_data_)
-[ ] Zpracování alespoň souborů tiff nebo ideálně přímo dicom
-[ ] Vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu) – mohla by se tím zvýšit přesnost klasifikace snímků bez RA
+- [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do souborů (tak aby se nepřepisovaly)
+- [x] Aby _test.py_ automaticky projel všechny snímky ve složce najednou bez zásahu uživatele
+- [ ] Automatické mazaní složek před spuštěním učení (logy už se mažou, zbývají _bottleneck_data_)
+- [ ] Zpracování alespoň souborů tiff nebo ideálně přímo dicom
+- [ ] Vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu) – mohla by se tím zvýšit přesnost klasifikace snímků bez RA
 
 
