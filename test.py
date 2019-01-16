@@ -18,14 +18,16 @@ LABEL_FONT_COLOR = (255.0, 255.0, 255.0)   # bila
 # LABEL_FONT_COLOR = (0.0, 0.0, 255.0)     # cervena
 # LABEL_FONT_COLOR = (255.0, 0.0, 0.0)     # modra
 
+# pokud je nastaveno na 1, otestuje program vsechny snimky najednou
+# pokud je nastaveno na 0, program pred prechodem na dalsi snimek ceka na stisknuti libovolne klavesy
+TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE = 0
+
 #######################################################################################################################
 
 # TODO výpis výstupu do souboru
 
-# TODO zpracování všechn souborů ve složce najednou (teď je potřeba postupně soubory vyměňovat)
-
 def main():
-    print("starting program . . .")
+    print("probiha spousteni programu . . .")
 
     if not checkIfNecessaryPathsAndFilesExist():
         return
@@ -42,7 +44,7 @@ def main():
     # end for
 
     # show the classifications to prove out that we were able to read the label file successfully
-    print("classifications = " + str(classifications))
+    print("kategorie, mezi kterymi program muze vybirat = " + str(classifications))
 
     # load the graph from file
     with tf.gfile.FastGFile(RETRAINED_GRAPH_PB_FILE_LOC, 'rb') as retrainedGraphFile:
@@ -61,6 +63,7 @@ def main():
     # end if
 
     with tf.Session() as sess:
+
         # for each file in the test images directory . . .
         for fileName in os.listdir(TEST_IMAGES_DIR):
             # if the file does not end in .jpg or .jpeg (case-insensitive), continue with the next iteration of the for loop
@@ -68,8 +71,10 @@ def main():
                 continue
             # end if
 
+            print("-----------------------------------------------------------------")
+
             # show the file name on std out
-            print(fileName)
+            print("zpracovava se soubor " + fileName)
 
             # get the file name and full path of the current image file
             imageFileWithPath = os.path.join(TEST_IMAGES_DIR, fileName)
@@ -87,14 +92,12 @@ def main():
 
             # convert the OpenCV image (numpy array) to a TensorFlow image
             tfImage = np.array(openCVImage)[:, :, 0:3]
-            
+
             # run the network to get the predictions
             predictions = sess.run(finalTensor, {'DecodeJpeg:0': tfImage})
 
             # sort predictions from most confidence to least confidence
             sortedPredictions = predictions[0].argsort()[-len(predictions[0]):][::-1]
-
-            print("---------------------------------------")
 
             # keep track of if we're going through the next for loop for the first time so we can show more info about
             # the first prediction, which is the most likely prediction (they were sorted descending above)
@@ -131,7 +134,8 @@ def main():
             # end for
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
-            cv2.waitKey()
+            if TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE:
+                cv2.waitKey()
             # after a key is pressed, close the current window to prep for the next time around
             cv2.destroyAllWindows()
         # end for
