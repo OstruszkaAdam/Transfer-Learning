@@ -1,0 +1,26 @@
+# TensorFlow graph data files
+events.out.tfevents*
+
+/test_images
+
+/training_images
+
+/bottleneck
+
+/bottleneck_data
+
+/imagenet
+
+/model
+/.idea
+
+/retrain_logs
+
+flower_photos.tar
+flower_photos.tgz\
+
+output_graph.pb
+output_labels.txt
+
+retrained_graph.pb
+retrained_labels.txt
