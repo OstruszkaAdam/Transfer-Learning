@@ -19,6 +19,11 @@ LABEL_FONT_COLOR = (255.0, 255.0, 255.0)   # bila
 # LABEL_FONT_COLOR = (255.0, 0.0, 0.0)     # modra
 
 #######################################################################################################################
+
+# TODO výpis výstupu do souboru
+
+# TODO zpracování všechn souborů ve složce najednou (teď je potřeba postupně soubory vyměňovat)
+
 def main():
     print("starting program . . .")
 
@@ -164,7 +169,7 @@ def checkIfNecessaryPathsAndFilesExist():
 
 #######################################################################################################################
 def writeResultOnImage(openCVImage, fileName, resultText):
-    # ToDo: this function may take some further fine-tuning to show the text well given any possible image size
+    # TODO: this function may take some further fine-tuning to show the text well given any possible image size
 
     imageHeight, imageWidth, sceneNumChannels = openCVImage.shape
 
@@ -172,7 +177,12 @@ def writeResultOnImage(openCVImage, fileName, resultText):
     fontFace = cv2.FONT_HERSHEY_DUPLEX
 
     # chose the font size and thickness as a fraction of the image size
-    fontScale = 2.0
+    if (imageWidth > 500): # pro obrazky sirsi nez 500 px
+        fontScale = imageWidth/1000 + 0.7  # se velikost fontu vypocita podle sirky
+    else:  # jinak (pro obrazky mensi)
+        fontScale = 1.0  # se pouzije vychozi velikost fontu
+    #fontScale = 2.0
+
     fontThickness = 2
 
     # make sure font thickness is an integer, if not, the OpenCV functions that use this may crash

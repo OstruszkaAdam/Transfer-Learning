@@ -631,9 +631,9 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
             continue
         # end if
 
-        # ToDo: This section should be refactored.  The right way to do this would be to get a list of the files that are
-        # ToDo: there then append (extend) those, not to get the name except the extension, then append an extension,
-        # ToDo: this (current) way is error prone of the original file has an upper case or mixed case extension
+        # TODO: This section should be refactored. The right way to do this would be to get a list of the files that are
+        #  there then append (extend) those, not to get the name except the extension, then append an extension,
+        #  this (current) way is error prone of the original file has an upper case or mixed case extension
 
         extensions = ['jpg', 'jpeg']
         file_list = []
