@@ -113,7 +113,7 @@ def main():
                     # show the result to std out
                     print("program zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # write the result on the image
-                    writeResultOnImage(openCVImage, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
+                    writeResultOnImage(openCVImage, fileName, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # finally we can show the OpenCV image
                     cv2.imshow(fileName, openCVImage)
                     # mark that we've show the most likely prediction at this point so the additional information in
@@ -163,7 +163,7 @@ def checkIfNecessaryPathsAndFilesExist():
 # end function
 
 #######################################################################################################################
-def writeResultOnImage(openCVImage, resultText):
+def writeResultOnImage(openCVImage, fileName, resultText):
     # ToDo: this function may take some further fine-tuning to show the text well given any possible image size
 
     imageHeight, imageWidth, sceneNumChannels = openCVImage.shape
@@ -190,6 +190,9 @@ def writeResultOnImage(openCVImage, resultText):
 
     # write the text on the image
     cv2.putText(openCVImage, resultText, (lowerLeftTextOriginX, lowerLeftTextOriginY), fontFace, fontScale, LABEL_FONT_COLOR, fontThickness, cv2.LINE_AA)
+
+    # uložit výstupní obrázek
+    cv2.imwrite("test_images_output/output_" + fileName, openCVImage)
 # end function
 
 #######################################################################################################################

@@ -3,6 +3,8 @@ events.out.tfevents*
 
 /test_images
 
+/test_images_output
+
 /training_images
 
 /bottleneck
