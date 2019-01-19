@@ -1,7 +1,15 @@
 # retrain.py
 #
 # original file by Google:
-# https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py
+# puvodni, nefunkcni odkaz: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py
+# novy a funkcni odkaz: https://github.com/tensorflow/hub/blob/master/examples/image_retraining/retrain.py
+
+# k tomuto souboru se dale vaze stranka:
+# https://www.tensorflow.org/hub/tutorials/image_retraining
+
+# a jeji novejsi verze:
+# https://codelabs.developers.google.com/codelabs/tensorflow-for-poets/#0
+
 """
 Transfer learning with Inception v3 or Mobilenet models.
 

@@ -1,7 +1,7 @@
-﻿VI1 projekt – binární klasifikace metodou Transfer Learning
+﻿VI1 projekt – klasifikace metodou Transfer Learning
 =====================================================
 
-**Cílem projektu je automatické rozpoznání, zda rentgenový snímek patří do kategorie RA (snímky rukou s revmatoidní artritidou) nebo Bez RA (mohou občas vypadat podobně, ale artritidu nemají).** 
+**Cílem projektu je automatické rozpoznání, zda rentgenový snímek patří do kategorie RA (snímky rukou s revmatoidní artritidou) nebo Bez RA (mohou občas vypadat podobně, ale artritidu nemají). K tomuto účelu je kvůli omezenému množství dat použit _modul pro extrakci rysů obrázku_ založený na předtrénované neuronce Inception V3, ke které se pouze dotrénuje poslední vrstva (tzv. bottleneck).** 
 
 K úspěšnému spuštění je potřeba
 ---------
@@ -21,14 +21,17 @@ Ovládání – před spuštěním učení (soubor retrain.py)
 
 Ovládání – spouštění přes příkazovou řádku
 ---------
-Windows (plně funkční)
+**Windows (plně funkční)**
+
+Popis následujícího kódu: Nejprve je nutné přesunout se do složky s projektem a potom ukázat cestu na Python a příslušný skript. Kdyby byl Python zadefinovaný v systémových proměnných PATH, byly by příkazy trochu kratší.
 ```
 cd C:\Users\Adam\PycharmProjects\Transfer_learning
+
 cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\retrain.py"
 cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\test.py"
 
 ```
-Linux (zatím netestováno)
+**Linux (zatím netestováno)**
 ```
 cd C:\Users\Adam\PycharmProjects\Transfer_learning
 
@@ -53,6 +56,7 @@ Popis a výsledky provedených pokusů
 Hodilo by se
 ---------
 - [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do souborů (tak aby se nepřepisovaly)
+- [ ] Rozjet tensorboard
 - [x] Aby _test.py_ automaticky projel všechny testovací snímky ve složce najednou bez zásahu uživatele
 - [x] Automatické mazaní logů před spuštěním učení nebo testování
 - [ ] Možnost automatického mazaní složky _2_bottleneck_data_
