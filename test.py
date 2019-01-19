@@ -40,7 +40,7 @@ def main():
     timeStamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 
     # otevreni (pripadne vytvoreni) souboru na ukladani vystupu z konzole
-    outputFile = open(TEST_OUTPUT_DIR + timeStamp + "_test_output_results.txt", "w") # a = pripsat na konec, w = pripsat
+    outputFile = open(TEST_OUTPUT_DIR + timeStamp + "_test_output_results.txt", "w+") # a = pripsat na konec, w = pripsat
 
     print("probiha spousteni programu . . .")
 

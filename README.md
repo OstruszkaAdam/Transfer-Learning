@@ -21,16 +21,14 @@ Ovládání – před spuštěním učení (soubor retrain.py)
 
 Ovládání – spouštění přes příkazovou řádku
 ---------
-Aktuálně nefunguje a nejspíš nefungovalo už od začátku, je taky rozdíl mezi spouštěním na Windows a na Linuxu.
-
-Windows:
+Windows (plně funkční)
 ```
+cd C:\Users\Adam\PycharmProjects\Transfer_learning
+cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\retrain.py"
 cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\test.py"
 
-cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\retrain.py"
-
 ```
-Linux:
+Linux (zatím netestováno)
 ```
 cd C:\Users\Adam\PycharmProjects\Transfer_learning
 
@@ -55,8 +53,9 @@ Popis a výsledky provedených pokusů
 Hodilo by se
 ---------
 - [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do souborů (tak aby se nepřepisovaly)
-- [x] Aby _test.py_ automaticky projel všechny snímky ve složce najednou bez zásahu uživatele
-- [ ] Automatické mazaní složek před spuštěním učení (logy už se mažou, zbývají _bottleneck_data_)
+- [x] Aby _test.py_ automaticky projel všechny testovací snímky ve složce najednou bez zásahu uživatele
+- [x] Automatické mazaní logů před spuštěním učení nebo testování
+- [ ] Možnost automatického mazaní složky _2_bottleneck_data_
 - [ ] Zpracování alespoň souborů tiff nebo ideálně přímo dicom
 - [ ] Vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu) – mohla by se tím zvýšit přesnost klasifikace snímků bez RA
 
