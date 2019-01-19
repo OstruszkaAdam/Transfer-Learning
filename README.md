@@ -1,7 +1,7 @@
 ﻿VI1 projekt – binární klasifikace metodou Transfer Learning
 =====================================================
 
-**Cílem projektu je rozpoznání, zda rentgenový snímek patří do kategorie RA (snímky ruk s revmatoidní artritidou) nebo Bez RA (mohou občas vypadat podobně, ale artritidu nemají).** 
+**Cílem projektu je automatické rozpoznání, zda rentgenový snímek patří do kategorie RA (snímky rukou s revmatoidní artritidou) nebo Bez RA (mohou občas vypadat podobně, ale artritidu nemají).** 
 
 K úspěšnému spuštění je potřeba
 ---------
@@ -18,6 +18,28 @@ Ovládání – před spuštěním učení (soubor retrain.py)
 * Do složky _bottleneck_data_ si program pro každou trénovací fotku ukládá popisný vektor mající 2048 složek. Pokud jsme právě nepřesunuli nějaký snímek z trénovacích do testovacích, můžeme obsah složky ponechat. Pokud ano, je potřeba příslušný soubor s vektorem smazat (jinak zničíme princip testování, protože práci neuronky má smysl testovat jen na snímcích, které ještě neviděla). Při větších zásazích do snímků nutno smazat celou složku.
 * Program prozatím umí zpracovat pouze formát jpg, což se zrovna pro medicínské použití nehodí, protože jpg je ztrátový formát a vytváří v obraze kompresní artefakty (vlastně obrazce, které tam nikdy nebyly).
 * Výsledný model, který po vytrénování slouží ke klasifikaci snímků, je uložený v souboru _retrained_graph_ a mazat se nejspíš nemusí.
+
+Ovládání – spouštění přes příkazovou řádku
+---------
+Aktuálně nefunguje a nejspíš nefungovalo už od začátku, je taky rozdíl mezi spouštěním na Windows a na Linuxu.
+
+Windows:
+```
+cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\test.py"
+
+cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\retrain.py"
+
+```
+Linux:
+```
+cd C:\Users\Adam\PycharmProjects\Transfer_learning
+
+python retrain.py --bottleneck_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --how_many_training_steps=500 --model_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --output_graph="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_graph.pb" --output_labels="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_labels.txt" --image_dir="C:\Users\Adam\PycharmProjects\Transfer_learning\training_images"
+
+C:\Users\Adam\PycharmProjects\Transfer_learning\classify_image_graph_def.pb
+
+classify_image_graph_def.pb
+```
 
 Popis a výsledky provedených pokusů
 ---------

@@ -1,16 +1,24 @@
 # test.py
 
+import time
+import shutil
 import os
 import tensorflow as tf
 import numpy as np
 import cv2
 
-# module-level variables ##############################################################################################
-RETRAINED_LABELS_TXT_FILE_LOC = os.getcwd() + "/" + "retrained_labels.txt"
-RETRAINED_GRAPH_PB_FILE_LOC = os.getcwd() + "/" + "retrained_graph.pb"
 
-TEST_IMAGES_INPUT_DIR = os.getcwd() + "/test_images_input"
-TEST_IMAGES_OUTPUT_DIR = os.getcwd() + "/test_images_output/"
+# module-level variables ##############################################################################################
+TRAINING_OUTPUT_DIR = os.getcwd() + "/3_training_output"
+
+RETRAINED_LABELS_TXT_FILE_LOC = TRAINING_OUTPUT_DIR + "/" + "retrained_labels.txt"
+RETRAINED_GRAPH_PB_FILE_LOC = TRAINING_OUTPUT_DIR + "/" + "retrained_graph.pb"
+
+# where to save summary logs for TensorBoard
+TENSORBOARD_TEST_LOGS_DIR = os.getcwd() + '/' + '5_test_chache/tensorboard_logs'
+
+TEST_INPUT_IMAGES_DIR = os.getcwd() + "/4_test_input_images"
+TEST_OUTPUT_DIR = os.getcwd() + "/6_test_output/"
 
 # definovani, jakou barvu maji mit popisky fotek
 # POZOR: v OpenCV nejsou barvy v pořadí RGB, ale BGR
@@ -28,8 +36,11 @@ TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE = 0
 # TODO výpis výstupu do souboru předělat čistěji, aby v kódu nebyly zdvojené řádky
 
 def main():
+    # aktualni cas a datum pro pouziti v nazvech vystupnich souboru
+    timeStamp = time.strftime("%Y-%m-%d_%H-%M-%S")
+
     # otevreni (pripadne vytvoreni) souboru na ukladani vystupu z konzole
-    outputFile = open(TEST_IMAGES_OUTPUT_DIR + "test_output.txt", "w") # a = pripsat na konec, w = pripsat
+    outputFile = open(TEST_OUTPUT_DIR + timeStamp + "_test_output_results.txt", "w") # a = pripsat na konec, w = pripsat
 
     print("probiha spousteni programu . . .")
 
@@ -61,7 +72,7 @@ def main():
     # end with
 
     # if the test image directory listed above is not valid, show an error message and bail
-    if not os.path.isdir(TEST_IMAGES_INPUT_DIR):
+    if not os.path.isdir(TEST_INPUT_IMAGES_DIR):
         print("the test image directory does not seem to be a valid directory, check file / directory paths")
         return
     # end if
@@ -69,7 +80,7 @@ def main():
     with tf.Session() as sess:
 
         # for each file in the test images directory . . .
-        for fileName in os.listdir(TEST_IMAGES_INPUT_DIR):
+        for fileName in os.listdir(TEST_INPUT_IMAGES_DIR):
             # if the file does not end in .jpg or .jpeg (case-insensitive), continue with the next iteration of the for loop
             if not (fileName.lower().endswith(".jpg") or fileName.lower().endswith(".jpeg")):
                 continue
@@ -83,7 +94,7 @@ def main():
             outputFile.write("\nzpracovava se soubor " + fileName)
 
             # get the file name and full path of the current image file
-            imageFileWithPath = os.path.join(TEST_IMAGES_INPUT_DIR, fileName)
+            imageFileWithPath = os.path.join(TEST_INPUT_IMAGES_DIR, fileName)
             # attempt to open the image with OpenCV
             openCVImage = cv2.imread(imageFileWithPath)
 
@@ -129,7 +140,7 @@ def main():
                     print("program zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     outputFile.write("\nprogram zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # write the result on the image
-                    writeResultOnImage(openCVImage, fileName, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
+                    writeResultOnImage(openCVImage, timeStamp, fileName, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # finally we can show the OpenCV image
                     cv2.imshow(fileName, openCVImage)
                     # mark that we've show the most likely prediction at this point so the additional information in
@@ -141,6 +152,8 @@ def main():
                 print(strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
                 outputFile.write("\n" + strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
             # end for
+            print("\n")
+            outputFile.write("\n")
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
             if TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE:
@@ -150,21 +163,39 @@ def main():
         # end for
     # end with
 
+    # prepare necessary directories that can be used during training
+    prepare_file_system()
+
     # write the graph to file so we can view with TensorBoard
-    tfFileWriter = tf.summary.FileWriter(os.getcwd())
+    tfFileWriter = tf.summary.FileWriter(TENSORBOARD_TEST_LOGS_DIR, sess.graph)
     tfFileWriter.add_graph(sess.graph)
     tfFileWriter.close()
 
-    #zavreni textoveho soubory, kam se ukladaly konzolove vypisy
+    #zavreni textoveho souboru, kam se ukladaly konzolove vypisy
     outputFile.close()
 
 # end main
 
 #######################################################################################################################
+def prepare_file_system():
+
+
+    # Setup the directory we'll write summaries to for TensorBoard
+    if tf.gfile.Exists(TENSORBOARD_TEST_LOGS_DIR):
+        # smazani predchozich logu - novy fungujici kod
+        shutil.rmtree(TENSORBOARD_TEST_LOGS_DIR, ignore_errors=True)
+        # smazani predchozich logu - puvodni kod z nejakeho duvodu nefungujici
+        # tf.gfile.DeleteRecursively(TENSORBOARD_TRAINING_LOGS_DIR)
+    # end if
+    tf.gfile.MakeDirs(TENSORBOARD_TEST_LOGS_DIR)
+    return
+# end function
+
+#######################################################################################################################
 def checkIfNecessaryPathsAndFilesExist():
-    if not os.path.exists(TEST_IMAGES_INPUT_DIR):
+    if not os.path.exists(TEST_INPUT_IMAGES_DIR):
         print('')
-        print('ERROR: TEST_IMAGES_DIR "' + TEST_IMAGES_INPUT_DIR + '" does not seem to exist')
+        print('ERROR: TEST_IMAGES_DIR "' + TEST_INPUT_IMAGES_DIR + '" does not seem to exist')
         print('Did you set up the test images?')
         print('')
         return False
@@ -184,7 +215,7 @@ def checkIfNecessaryPathsAndFilesExist():
 # end function
 
 #######################################################################################################################
-def writeResultOnImage(openCVImage, fileName, resultText):
+def writeResultOnImage(openCVImage, timeStamp, fileName, resultText):
     # TODO: this function may take some further fine-tuning to show the text well given any possible image size
 
     imageHeight, imageWidth, sceneNumChannels = openCVImage.shape
@@ -218,7 +249,7 @@ def writeResultOnImage(openCVImage, fileName, resultText):
     cv2.putText(openCVImage, resultText, (lowerLeftTextOriginX, lowerLeftTextOriginY), fontFace, fontScale, LABEL_FONT_COLOR, fontThickness, cv2.LINE_AA)
 
     # uložit výstupní obrázek
-    cv2.imwrite(TEST_IMAGES_OUTPUT_DIR + "output_" + fileName, openCVImage)
+    cv2.imwrite(TEST_OUTPUT_DIR + timeStamp + "_test_output_" + fileName, openCVImage)
 # end function
 
 #######################################################################################################################

@@ -49,24 +49,27 @@ MIN_NUM_IMAGES_REQUIRED_FOR_TESTING = 1
 MAX_NUM_IMAGES_PER_CLASS = 2 ** 27 - 1  # ~134M
 
 # path to folders of labeled images
-TRAINING_IMAGES_DIR = os.getcwd() + '/training_images'
+TRAINING_INPUT_IMAGES_DIR = os.getcwd() + '/1_training_input_images'
 
-TEST_IMAGES_INPUT_DIR = os.getcwd() + "/test_images_input/"
+TEST_INPUT_IMAGES_DIR = os.getcwd() + "/4_test_input_images/"
+
+# kam ulozit vsechny vystupy z neuronky
+TRAINING_OUTPUT_DIR = os.getcwd() + "/3_training_output"
 
 # where to save the trained graph
-OUTPUT_GRAPH = os.getcwd() + '/' + 'retrained_graph.pb'
+OUTPUT_GRAPH = TRAINING_OUTPUT_DIR + '/' + 'retrained_graph.pb'
 
 # where to save the intermediate graphs
-INTERMEDIATE_OUTPUT_GRAPHS_DIR = os.getcwd() + '/intermediate_graph'
+INTERMEDIATE_OUTPUT_GRAPHS_DIR = TRAINING_OUTPUT_DIR + '/intermediate_graph'
 
 # how many steps to store intermediate graph, if "0" then will not store
 INTERMEDIATE_STORE_FREQUENCY = 0
 
 # where to save the trained graph's labels
-OUTPUT_LABELS = os.getcwd() + '/' + 'retrained_labels.txt'
+OUTPUT_LABELS = TRAINING_OUTPUT_DIR + '/' + 'retrained_labels.txt'
 
 # where to save summary logs for TensorBoard
-TENSORBOARD_DIR = os.getcwd() + '/' + 'tensorboard_logs'
+TENSORBOARD_TRAINING_LOGS_DIR = os.getcwd() + '/' + '2_training_chache/tensorboard_logs'
 
 # how many training steps to run before ending
 # NOTE: original Google default is 4000, use 4000 (or possibly higher) for production grade results
@@ -107,10 +110,10 @@ VALIDATION_BATCH_SIZE = 100
 PRINT_MISCLASSIFIED_TEST_IMAGES = False
 
 # Path to classify_image_graph_def.pb, imagenet_synset_to_human_label_map.txt, and imagenet_2012_challenge_label_map_proto.pbtxt
-MODEL_DIR = os.getcwd() + "/" + "model"
+MODEL_DIR = os.getcwd() + "/" + "2_training_chache/model"
 
 # Path to cache bottleneck layer values as files
-BOTTLENECK_DIR = os.getcwd() + '/' + 'bottleneck_data'
+BOTTLENECK_DIR = os.getcwd() + '/' + '2_bottleneck_data'
 
 # the name of the output classification layer in the retrained graph
 FINAL_TENSOR_NAME = 'final_result'
@@ -176,14 +179,14 @@ def main():
 
     # Look at the folder structure, and create lists of all the images.
     print("creating image lists . . .")
-    image_lists = create_image_lists(TRAINING_IMAGES_DIR, TESTING_PERCENTAGE, VALIDATION_PERCENTAGE)
+    image_lists = create_image_lists(TRAINING_INPUT_IMAGES_DIR, TESTING_PERCENTAGE, VALIDATION_PERCENTAGE)
     class_count = len(image_lists.keys())
     if class_count == 0:
-        tf.logging.error('No valid folders of images found at ' + TRAINING_IMAGES_DIR)
+        tf.logging.error('No valid folders of images found at ' + TRAINING_INPUT_IMAGES_DIR)
         return -1
     # end if
     if class_count == 1:
-        tf.logging.error('Only one valid folder of images found at ' + TRAINING_IMAGES_DIR + ' - multiple classes are needed for classification.')
+        tf.logging.error('Only one valid folder of images found at ' + TRAINING_INPUT_IMAGES_DIR + ' - multiple classes are needed for classification.')
         return -1
     # end if
 
@@ -214,7 +217,7 @@ def main():
         else:
             # We'll make sure we've calculated the 'bottleneck' image summaries and
             # cached them on disk.
-            cache_bottlenecks(sess, image_lists, TRAINING_IMAGES_DIR, BOTTLENECK_DIR, jpeg_data_tensor, decoded_image_tensor,
+            cache_bottlenecks(sess, image_lists, TRAINING_INPUT_IMAGES_DIR, BOTTLENECK_DIR, jpeg_data_tensor, decoded_image_tensor,
                               resized_image_tensor, bottleneck_tensor, ARCHITECTURE)
         # end if
 
@@ -232,8 +235,8 @@ def main():
         # Merge all the summaries and write them out to the tensorboard_dir
         print("writing TensorBoard info . . .")
         merged = tf.summary.merge_all()
-        train_writer = tf.summary.FileWriter(TENSORBOARD_DIR + '/train', sess.graph)
-        validation_writer = tf.summary.FileWriter(TENSORBOARD_DIR + '/validation')
+        train_writer = tf.summary.FileWriter(TENSORBOARD_TRAINING_LOGS_DIR + '/train', sess.graph)
+        validation_writer = tf.summary.FileWriter(TENSORBOARD_TRAINING_LOGS_DIR + '/validation')
 
         # Set up all our weights to their initial default values.
         init = tf.global_variables_initializer()
@@ -246,11 +249,11 @@ def main():
             # time with distortions applied, or from the cache stored on disk.
             if doDistortImages:
                 (train_bottlenecks, train_ground_truth) = get_random_distorted_bottlenecks(sess, image_lists, TRAIN_BATCH_SIZE, 'training',
-                                                                                           TRAINING_IMAGES_DIR, distorted_jpeg_data_tensor,
+                                                                                           TRAINING_INPUT_IMAGES_DIR, distorted_jpeg_data_tensor,
                                                                                            distorted_image_tensor, resized_image_tensor, bottleneck_tensor)
             else:
                 (train_bottlenecks, train_ground_truth, _) = get_random_cached_bottlenecks(sess, image_lists, TRAIN_BATCH_SIZE, 'training',
-                                                                                           BOTTLENECK_DIR, TRAINING_IMAGES_DIR, jpeg_data_tensor,
+                                                                                           BOTTLENECK_DIR, TRAINING_INPUT_IMAGES_DIR, jpeg_data_tensor,
                                                                                            decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
                                                                                            ARCHITECTURE)
             # end if
@@ -267,7 +270,7 @@ def main():
                 tf.logging.info('%s: Step %d: Train accuracy = %.1f%%' % (datetime.now(), i, train_accuracy * 100))
                 tf.logging.info('%s: Step %d: Cross entropy = %f' % (datetime.now(), i, cross_entropy_value))
                 validation_bottlenecks, validation_ground_truth, _ = (get_random_cached_bottlenecks(sess, image_lists, VALIDATION_BATCH_SIZE, 'validation',
-                                                                                                    BOTTLENECK_DIR, TRAINING_IMAGES_DIR, jpeg_data_tensor,
+                                                                                                    BOTTLENECK_DIR, TRAINING_INPUT_IMAGES_DIR, jpeg_data_tensor,
                                                                                                     decoded_image_tensor, resized_image_tensor, bottleneck_tensor,
                                                                                                     ARCHITECTURE))
                 # Run a validation step and capture training summaries for TensorBoard with the `merged` op.
@@ -290,7 +293,7 @@ def main():
         # We've completed all our training, so run a final test evaluation on some new images we haven't used before
         print("running testing . . .")
         test_bottlenecks, test_ground_truth, test_filenames = (get_random_cached_bottlenecks(sess, image_lists, TEST_BATCH_SIZE, 'testing', BOTTLENECK_DIR,
-                                                                                             TRAINING_IMAGES_DIR, jpeg_data_tensor, decoded_image_tensor, resized_image_tensor,
+                                                                                             TRAINING_INPUT_IMAGES_DIR, jpeg_data_tensor, decoded_image_tensor, resized_image_tensor,
                                                                                              bottleneck_tensor, ARCHITECTURE))
         test_accuracy, predictions = sess.run([evaluation_step, prediction], feed_dict={bottleneck_input: test_bottlenecks, ground_truth_input: test_ground_truth})
         tf.logging.info('Final test accuracy = %.1f%% (N=%d)' % (test_accuracy * 100, len(test_bottlenecks)))
@@ -317,9 +320,9 @@ def main():
 #######################################################################################################################
 def checkIfNecessaryPathsAndFilesExist():
     # if the training directory does not exist, show and error message and bail
-    if not os.path.exists(TRAINING_IMAGES_DIR):
+    if not os.path.exists(TRAINING_INPUT_IMAGES_DIR):
         print('')
-        print('ERROR: TRAINING_IMAGES_DIR "' + TRAINING_IMAGES_DIR + '" does not seem to exist')
+        print('ERROR: TRAINING_IMAGES_DIR "' + TRAINING_INPUT_IMAGES_DIR + '" does not seem to exist')
         print('Did you set up the training images?')
         print('')
         return False
@@ -338,8 +341,8 @@ def checkIfNecessaryPathsAndFilesExist():
     trainingSubDirs = []
 
     # populate the training sub-directories
-    for dirName in os.listdir(TRAINING_IMAGES_DIR):
-        currentTrainingImagesSubDir = os.path.join(TRAINING_IMAGES_DIR, dirName)
+    for dirName in os.listdir(TRAINING_INPUT_IMAGES_DIR):
+        currentTrainingImagesSubDir = os.path.join(TRAINING_INPUT_IMAGES_DIR, dirName)
         if os.path.isdir(currentTrainingImagesSubDir):
             trainingSubDir = TrainingSubDir()
             trainingSubDir.loc = currentTrainingImagesSubDir
@@ -349,7 +352,7 @@ def checkIfNecessaryPathsAndFilesExist():
 
     # if no training sub-directories were found, show an error message and return false
     if len(trainingSubDirs) == 0:
-        print("ERROR: there don't seem to be any training image sub-directories in " + TRAINING_IMAGES_DIR)
+        print("ERROR: there don't seem to be any training image sub-directories in " + TRAINING_INPUT_IMAGES_DIR)
         print("Did you make a separare image sub-directory for each classification type?")
         return False
     # end if
@@ -383,9 +386,9 @@ def checkIfNecessaryPathsAndFilesExist():
     # end for
 
     # if the test images directory does not exist, show and error message and bail
-    if not os.path.exists(TEST_IMAGES_INPUT_DIR):
+    if not os.path.exists(TEST_INPUT_IMAGES_DIR):
         print('')
-        print('ERROR: TEST_IMAGES_DIR "' + TEST_IMAGES_INPUT_DIR + '" does not seem to exist')
+        print('ERROR: TEST_IMAGES_DIR "' + TEST_INPUT_IMAGES_DIR + '" does not seem to exist')
         print('Did you break out some test images?')
         print('')
         return False
@@ -393,7 +396,7 @@ def checkIfNecessaryPathsAndFilesExist():
 
     # count how many images are in the test images directory
     numImagesInTestDir = 0
-    for fileName in os.listdir(TEST_IMAGES_INPUT_DIR):
+    for fileName in os.listdir(TEST_INPUT_IMAGES_DIR):
         if fileName.endswith(".jpg"):
             numImagesInTestDir += 1
         # end if
@@ -401,7 +404,7 @@ def checkIfNecessaryPathsAndFilesExist():
 
     # if there are not enough images in the test images directory, show an error and return false
     if numImagesInTestDir < MIN_NUM_IMAGES_REQUIRED_FOR_TESTING:
-        print("ERROR: there are not at least " + str(MIN_NUM_IMAGES_REQUIRED_FOR_TESTING) + " images in " + TEST_IMAGES_INPUT_DIR)
+        print("ERROR: there are not at least " + str(MIN_NUM_IMAGES_REQUIRED_FOR_TESTING) + " images in " + TEST_INPUT_IMAGES_DIR)
         print("Did you break out some test images?")
         return False
     # end if
@@ -414,11 +417,13 @@ def prepare_file_system():
 
 
     # Setup the directory we'll write summaries to for TensorBoard
-    if tf.gfile.Exists(TENSORBOARD_DIR):
-        shutil.rmtree(TENSORBOARD_DIR, ignore_errors=True)
-        #tf.gfile.DeleteRecursively(TENSORBOARD_DIR)
+    if tf.gfile.Exists(TENSORBOARD_TRAINING_LOGS_DIR):
+        # smazani predchozich logu - novy fungujici kod
+        shutil.rmtree(TENSORBOARD_TRAINING_LOGS_DIR, ignore_errors=True)
+        # smazani predchozich logu - puvodni kod z nejakeho duvodu nefungujici
+        # tf.gfile.DeleteRecursively(TENSORBOARD_TRAINING_LOGS_DIR)
     # end if
-    tf.gfile.MakeDirs(TENSORBOARD_DIR)
+    tf.gfile.MakeDirs(TENSORBOARD_TRAINING_LOGS_DIR)
     if INTERMEDIATE_STORE_FREQUENCY > 0:
         makeDirIfDoesNotExist(INTERMEDIATE_OUTPUT_GRAPHS_DIR)
     # end if
@@ -559,7 +564,7 @@ def downloadModelIfNotAlreadyPresent(data_url):
         print('Extracting file from ', filepath)
         tarfile.open(filepath, 'r:gz').extractall(dest_directory)
     else:
-        print('Not extracting or downloading files, model already present in disk')
+        print('Model already present on disk, so no files were extracted or downloaded')
     # end if
 # end function
 
