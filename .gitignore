@@ -1,23 +1,6 @@
 # TensorFlow graph data files
 events.out.tfevents*
 
-/1_training_input_images
-
-/2_bottleneck_data
-
-/2_training_chache
-
-/3_training_output
-
-/4_test_input_images
-
-/5_test_chache
-
-/6_test_output
-
-
-/bottleneck
-
 /imagenet
 
 /.idea
@@ -32,4 +15,4 @@ output_labels.txt
 
 retrained_graph.pb
 retrained_labels.txt
-test_images_input/desktop.ini
+4_test_input_images/desktop.ini
