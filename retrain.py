@@ -27,6 +27,8 @@ This produces a new model file that can be loaded and run by any TensorFlow prog
 
 To use with TensorBoard:
 tensorboard --logdir /path/to/tensorboard_logs
+
+tensorboard --logdir /home/ubuntu/PycharmProjects/Transfer-Learning/2_training_chache/tensorboard_logs
 """
 import shutil
 from datetime import datetime

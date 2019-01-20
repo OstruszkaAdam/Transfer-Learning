@@ -19,28 +19,41 @@ Ovládání – před spuštěním učení (soubor retrain.py)
 * Program prozatím umí zpracovat pouze formát jpg, což se zrovna pro medicínské použití nehodí, protože jpg je ztrátový formát a vytváří v obraze kompresní artefakty (vlastně obrazce, které tam nikdy nebyly).
 * Výsledný model, který po vytrénování slouží ke klasifikaci snímků, je uložený v souboru _retrained_graph_ a mazat se nejspíš nemusí.
 
-Ovládání – spouštění přes příkazovou řádku
+Ovládání – spouštění přes příkazovou řádku (nebo záložku Terminal v PyCharmu)
 ---------
-**Windows (plně funkční)**
+**Windows (funkční kromě předávání parametrů)**
 
-Popis následujícího kódu: Nejprve je nutné přesunout se do složky s projektem a potom ukázat cestu na Python a příslušný skript. Kdyby byl Python zadefinovaný v systémových proměnných PATH, byly by příkazy trochu kratší.
+Popis následujícího kódu: Nejprve je nutné přesunout se do složky s projektem a potom ukázat cestu na Python a příslušný skript. Kdyby byl Python zadefinovaný v systémových proměnných PATH, byly by příkazy trochu kratší. Aby to šlo spustit na jednom řádku, bylo by potřeba předat v parametrech umístění všech složek, co program používá.
 ```
 cd C:\Users\Adam\PycharmProjects\Transfer_learning
 
-cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\retrain.py"
-cmd /C ""C:\Program Files\Python36\python.exe" C:\Users\Adam\PycharmProjects\Transfer_learning\test.py"
+cmd /C ""C:\Program Files\Python36\python.exe" retrain.py"
+cmd /C ""C:\Program Files\Python36\python.exe" test.py"
 
 ```
-**Linux (zatím netestováno)**
+ 
+**Linux (funkční kromě předávání parametrů)**
+
+V Linuxu je python už zadefinovaný v systémových promměnných, takže místo cesty k němu ho stačí prostě zavolat.
 ```
-cd C:\Users\Adam\PycharmProjects\Transfer_learning
+cd /home/ubuntu/PycharmProjects/Transfer-Learning/
 
-python retrain.py --bottleneck_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --how_many_training_steps=500 --model_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --output_graph="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_graph.pb" --output_labels="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_labels.txt" --image_dir="C:\Users\Adam\PycharmProjects\Transfer_learning\training_images"
-
-C:\Users\Adam\PycharmProjects\Transfer_learning\classify_image_graph_def.pb
-
-classify_image_graph_def.pb
+python3 retrain.py
 ```
+
+Předávání parametrů zatím nefunguje:
+```
+cd /home/ubuntu/PycharmProjects/Transfer-Learning/
+
+python3 retrain.py --bottleneck_dir="/home/ubuntu/PycharmProjects/Transfer-Learning/1_training_input_images" --how_many_training_steps=10 --model_dir="C:\Users\Adam\PycharmProjects\Transfer_learning" --output_graph="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_graph.pb" --output_labels="C:\Users\Adam\PycharmProjects\Transfer_learning\retrained_labels.txt" --image_dir="C:\Users\Adam\PycharmProjects\Transfer_learning\training_images"
+
+```
+
+Spuštění TensorBoard pro sledování statistik učení (zatím Linux only)
+```
+tensorboard --logdir /home/ubuntu/PycharmProjects/Transfer-Learning/2_training_chache/tensorboard_logs
+```
+
 
 Popis a výsledky provedených pokusů
 ---------
