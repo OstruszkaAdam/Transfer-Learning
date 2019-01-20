@@ -39,6 +39,7 @@ V Linuxu je python už zadefinovaný v systémových promměnných, takže míst
 cd /home/ubuntu/PycharmProjects/Transfer-Learning/
 
 python3 retrain.py
+python3 test.py
 ```
 
 Předávání parametrů zatím nefunguje:
