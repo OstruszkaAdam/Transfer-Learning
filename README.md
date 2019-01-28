@@ -10,6 +10,21 @@ K úspěšnému spuštění je potřeba
 * Na Windows hromada štěstí, kupa času a pevné nervy (hlavně při pokusech o instalaci balíčků)
 * Na Linuxu se to obejde i bez štěstí, ale o to větší jsou nároky na čas a nervy (Zatímco na Windows je problém Python vůbec dostat, v Ubuntu jsou vestavěné rovnou dvě verze zároveň a proto červená žárovka zpočátku taky nefunguje)
 
+Předzpracování snímků – nutný převod na jpg
+---------
+Na Windows jsou dostupné programy úplně nefunkční nebo placené a tím pádem funkční jen po dobu trvání trial verze.
+
+Na Ubuntu Linuxu se jako jediná funkční možnost ukázal být vestavěný nástroj Morgify. Pro převedení všech souborů ve složce jsem napsal jednoduchý prográmek spouštený přes příkazovou řádku.
+
+**Krok 1:**
+Přesunout se v příkazové řádce do složky s Dicom soubory určenými k převodu. Buď pomocí příkazu _cd_ a našeptávání přes _Tab_ nebo přes kontextovou nabídku.
+
+**Krok 2:**
+Překopírovat do této složky soubor DCMtoJPG a následně ho sputit příkazem
+```
+sh DCMtoJPG.sh
+```
+
 Ovládání – před spuštěním učení (soubor retrain.py)
 ---------
 * Naplnit složku _training_images_ a několik málo snímků z ní přesunout do složky _test_images_. Tyto snímky slouží jen pro ruční testování otestování naučeného modelu. (Automatické testování si provádí program sám jako součást učení – v každém kroku učení rozdělí data na trénovací a testovací a provede otestování).
@@ -72,13 +87,22 @@ Popis a výsledky provedených pokusů
 
 Hodilo by se
 ---------
-- [ ] Ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
-- [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do souborů (tak aby se nepřepisovaly)
-- [ ] Rozjet tensorboard, porovnat jeho současné fungování s původní sktrukturou složek
+**Předzpracování snímků**
+- [ ] předělat skript na převod obrazových formátů tak, aby jako parametr přijímal cestu ke složce a šel spouštět odkudkoliv
+- [ ] Pro zvýšení přesnosti klasifikace vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu)
+- [ ] Zpracování alespoň souborů tiff (s automatickým převodem z dicomu) nebo ideálně přímo dicom
+
+**Testování snímků**
 - [x] Aby _test.py_ automaticky projel všechny testovací snímky ve složce najednou bez zásahu uživatele
+- [ ] Ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
+
+**Technické a funkční záležitosti**
+- [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do oddělených složek a souborů (tak aby se nepřepisovaly) + souhrnně do jedné přehledné tabulky
+- [X] Rozjet tensorboard (na Linuxu splněno, na Windows asi ztráta času)
+- [ ] Porovnat současné fungování Tensorboard s původní sktrukturou složek a ověřit jeho správnou funkčnost
 - [x] Automatické mazaní logů před spuštěním učení nebo testování
 - [ ] Možnost automatického mazaní složky _2_bottleneck_data_
-- [ ] Zpracování alespoň souborů tiff (s automatickým převodem z dicomu) nebo ideálně přímo dicom
-- [ ] Pro zvýšení přesnosti klasifikace vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu)
+
+
 
 
