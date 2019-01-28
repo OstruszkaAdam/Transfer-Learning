@@ -35,6 +35,8 @@ TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE = 0
 
 # TODO výpis výstupu do souboru předělat čistěji, aby v kódu nebyly zdvojené řádky
 
+# TODO ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
+
 def main():
     # aktualni cas a datum pro pouziti v nazvech vystupnich souboru
     timeStamp = time.strftime("%Y-%m-%d_%H-%M-%S")

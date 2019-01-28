@@ -34,7 +34,7 @@ cmd /C ""C:\Program Files\Python36\python.exe" test.py"
  
 **Linux (funkční kromě předávání parametrů)**
 
-V Linuxu je python už zadefinovaný v systémových promměnných, takže místo cesty k němu ho stačí prostě zavolat.
+V Linuxu je Python už zadefinovaný v systémových promměnných, takže místo cesty k němu ho stačí prostě zavolat.
 ```
 cd /home/ubuntu/PycharmProjects/Transfer-Learning/
 
@@ -50,17 +50,20 @@ python3 retrain.py --bottleneck_dir="/home/ubuntu/PycharmProjects/Transfer-Learn
 
 ```
 
-Spuštění TensorBoard pro sledování statistik učení (zatím Linux only)
+Spuštění TensorBoard pro sledování statistik procesu učení
+---------
+TensorBoard slouží ke prohlížení vytvořených logů buď přímo živě během procesu učení nebo u zpětně.
+V případě zájmu o sledování živě je potřeba TensorBoard spustit následujícím příkazem (pouze na Linuxu) ještě před spuštěním učení.
 ```
 tensorboard --logdir /home/ubuntu/PycharmProjects/Transfer-Learning/2_training_chache/tensorboard_logs
 ```
-
+TensorFlow na Windows má ještě více bugů než pro Linux a to platí i pro TensorBoard. Na Windows se mi TensorBoard rozjet nepodařilo.
 
 Popis a výsledky provedených pokusů
 ---------
 * K vytrénování posloužilo celkem 2505 snímků (624 bez příznaků RA a 1881 s příznaky), více jich počátkem ledna dostupných nebylo. Snímky zabírají několik GB a nejsou součástí tohoto repozitáře.
 * Do jpg jsme alespoň převáděli s kvalitou 100 %, abychom artefakty v obrazech co nejvíc potlačili.
-* Snímky byly kromě převodu formátu použity tak, jak byly pořízeny, nebylo potřeba vůbec žádné předzpracování (ořezání, rozřezání snímků obou rukou na prvou a levou, vyrovnání expozice, doostření, ani nic podobného). Program se musel vypořádat se snímky různě pootočenými, snímky pouze ruky nebo ruky i předloktí, snímky s prsteny, nemocničními náramky, amputovanými prsty i s mizernou technickou kvalitou (podexpozice).
+* Snímky byly kromě převodu formátu použity tak, jak byly pořízeny, nebylo potřeba vůbec žádné předzpracování (ořezání, rozřezání snímků obou rukou na pravou a levou, vyrovnání expozice, doostření, ani nic podobného). Program se musel vypořádat se snímky různě pootočenými, snímky pouze ruky nebo ruky i předloktí, snímky s prsteny, nemocničními náramky, amputovanými prsty i s mizernou technickou kvalitou (podexpozice).
 * Vytrénování lze zvládnout i na průměrném stolním počítači za 5 až 30 minut v závislosti na výše zmiňovaných konstantách. Na průměrném notebooku to samé zabralo 20 až N minut. Při výchozím počtu 500 kroků zabere nejvíc času analýza snímků (vytvoření vektoru), teprve pak probíhá samotné učení se získanými hodotami, to už je ale celkem rychlé. Se všemi výše zmiňovanými konstantami na maximum trvá vytrénování asi 50 minut, přínosem ale je o 10 % vyšší spolehlivost klasifikace znímků bez RA.
 * Na vzorkovém datasetu z počátku ledna celková přesnost učení kolísala od 96,3 % do 97,1 %. 
 * Následné zařazení náhodného snímku do kategorie (soubor test.py) provedl program vždy správně se spolehlivostí od 80 % do 99,55 %. Jistější si byl u snímků spadajících do kategorie RA, kterých bylo v datasetu mnohem více. Snímky bez RA zařazoval s menší jistotou.
@@ -69,12 +72,13 @@ Popis a výsledky provedených pokusů
 
 Hodilo by se
 ---------
+- [ ] Ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
 - [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do souborů (tak aby se nepřepisovaly)
-- [ ] Rozjet tensorboard
+- [ ] Rozjet tensorboard, porovnat jeho současné fungování s původní sktrukturou složek
 - [x] Aby _test.py_ automaticky projel všechny testovací snímky ve složce najednou bez zásahu uživatele
 - [x] Automatické mazaní logů před spuštěním učení nebo testování
 - [ ] Možnost automatického mazaní složky _2_bottleneck_data_
-- [ ] Zpracování alespoň souborů tiff nebo ideálně přímo dicom
-- [ ] Vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu) – mohla by se tím zvýšit přesnost klasifikace snímků bez RA
+- [ ] Zpracování alespoň souborů tiff (s automatickým převodem z dicomu) nebo ideálně přímo dicom
+- [ ] Pro zvýšení přesnosti klasifikace vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu)
 
 
