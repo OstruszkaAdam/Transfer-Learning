@@ -30,6 +30,7 @@ tensorboard --logdir /path/to/tensorboard_logs
 
 tensorboard --logdir /home/ubuntu/PycharmProjects/Transfer-Learning/2_training_chache/tensorboard_logs
 """
+import inspect
 import shutil
 from datetime import datetime
 import hashlib
@@ -49,6 +50,8 @@ from tensorflow.python.framework import graph_util
 from tensorflow.python.framework import tensor_shape
 from tensorflow.python.platform import gfile
 from tensorflow.python.util import compat
+
+from utils.zapsatJakoExcel import zapsatJakoExcel
 
 # module level variables ##############################################################################################
 MIN_NUM_IMAGES_REQUIRED_FOR_TRAINING = 5
@@ -105,7 +108,7 @@ EVAL_STEP_INTERVAL = 10
 # Nevyhody:
 # 1) cim mensi pocet, tim min bude presny vysledek
 # how many images to train on at a time
-TRAIN_BATCH_SIZE = 100
+TRAIN_BATCH_SIZE = 1500
 
 # How many images to test on. This test set is only used once, to evaluate the final accuracy of the model after
 # training completes.  A value of -1 causes the entire test set to be used, which leads to more stable results across runs.
@@ -114,7 +117,7 @@ TEST_BATCH_SIZE = -1
 # How many images to use in an evaluation batch. This validation set is used much more often than the test set, and is an early indicator of how
 # accurate the model is during training. A value of -1 causes the entire validation set to be used, which leads to
 # more stable results across training iterations, but may be slower on large training sets.
-VALIDATION_BATCH_SIZE = 100
+VALIDATION_BATCH_SIZE = -1
 
 # whether to print out a list of all misclassified test images
 PRINT_MISCLASSIFIED_TEST_IMAGES = False
@@ -180,6 +183,9 @@ def main():
         tf.logging.error('Did not recognize architecture flag')
         return -1
     # end if
+
+    # zapsatNastaveniDoSouboru()
+    zapsatNastaveniDoExcelu()
 
     # download the model if necessary, then create the model graph
     print("downloading model (if necessary) . . .")
@@ -1257,6 +1263,60 @@ def save_graph_to_file(sess, graph, graph_file_name):
         f.write(output_graph_def.SerializeToString())
     # end with
     return
+# end function
+
+#######################################################################################################################
+def ziskatNazevPromenne(promenna):
+  for line in inspect.getframeinfo(inspect.currentframe().f_back)[3]:
+    m = re.search(r'\bziskatNazevPromenne\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)', line)
+    if m:
+      return m.group(1)
+# end function
+
+
+#######################################################################################################################
+# def zapsatNastaveniDoSouboru():
+#     outputFile = open(TRAINING_OUTPUT_DIR + "/" + "traning_settings.txt", "w+") # a = pripsat na konec, w = pripsat
+#     outputFile.write(ziskatNazevPromenne(HOW_MANY_TRAINING_STEPS) + " = " + str(HOW_MANY_TRAINING_STEPS) + "\n")
+#     outputFile.write(ziskatNazevPromenne(LEARNING_RATE) + " = " + str(LEARNING_RATE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(TESTING_PERCENTAGE) + " = " + str(TESTING_PERCENTAGE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(VALIDATION_PERCENTAGE) + " = " + str(VALIDATION_PERCENTAGE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(EVAL_STEP_INTERVAL) + " = " + str(EVAL_STEP_INTERVAL) + "\n")
+#     outputFile.write(ziskatNazevPromenne(TRAIN_BATCH_SIZE) + " = " + str(TRAIN_BATCH_SIZE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(TEST_BATCH_SIZE) + " = " + str(TEST_BATCH_SIZE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(VALIDATION_BATCH_SIZE) + " = " + str(VALIDATION_BATCH_SIZE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(FLIP_LEFT_RIGHT) + " = " + str(FLIP_LEFT_RIGHT) + "\n")
+#     outputFile.write(ziskatNazevPromenne(RANDOM_CROP) + " = " + str(RANDOM_CROP) + "\n")
+#     outputFile.write(ziskatNazevPromenne(RANDOM_SCALE) + " = " + str(RANDOM_SCALE) + "\n")
+#     outputFile.write(ziskatNazevPromenne(RANDOM_BRIGHTNESS) + " = " + str(RANDOM_BRIGHTNESS) + "\n")
+#     outputFile.write(ziskatNazevPromenne(ARCHITECTURE) + " = " + str(ARCHITECTURE) + "\n")
+#     outputFile.close()
+# end function
+
+#######################################################################################################################
+def zapsatNastaveniDoExcelu():
+
+
+    # Some data we want to write to the worksheet.
+    nastaveniKzapsaniDoSouboru = (
+        [ziskatNazevPromenne(HOW_MANY_TRAINING_STEPS), HOW_MANY_TRAINING_STEPS],
+        [ziskatNazevPromenne(LEARNING_RATE), LEARNING_RATE],
+        [ziskatNazevPromenne(TESTING_PERCENTAGE), TESTING_PERCENTAGE],
+        [ziskatNazevPromenne(VALIDATION_PERCENTAGE), VALIDATION_PERCENTAGE],
+        [ziskatNazevPromenne(EVAL_STEP_INTERVAL), EVAL_STEP_INTERVAL],
+        [ziskatNazevPromenne(TRAIN_BATCH_SIZE), TRAIN_BATCH_SIZE],
+        [ziskatNazevPromenne(TEST_BATCH_SIZE), TEST_BATCH_SIZE],
+        [ziskatNazevPromenne(VALIDATION_BATCH_SIZE), VALIDATION_BATCH_SIZE],
+        [ziskatNazevPromenne(FLIP_LEFT_RIGHT), FLIP_LEFT_RIGHT],
+        [ziskatNazevPromenne(RANDOM_CROP), RANDOM_CROP],
+        [ziskatNazevPromenne(RANDOM_SCALE), RANDOM_SCALE],
+        [ziskatNazevPromenne(RANDOM_BRIGHTNESS), RANDOM_BRIGHTNESS],
+        [ziskatNazevPromenne(ARCHITECTURE), ARCHITECTURE]
+    )
+
+    nazevSouboru = TRAINING_OUTPUT_DIR + "/" + "traning_settings.xlsx"
+
+    zapsatJakoExcel(nastaveniKzapsaniDoSouboru, nazevSouboru)
 # end function
 
 #######################################################################################################################

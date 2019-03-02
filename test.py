@@ -7,6 +7,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
+from utils.zapsatJakoExcel import zapsatJakoExcel
 
 # module-level variables ##############################################################################################
 TRAINING_OUTPUT_DIR = os.getcwd() + "/3_training_output"
@@ -252,6 +253,32 @@ def writeResultOnImage(openCVImage, timeStamp, fileName, resultText):
 
     # uložit výstupní obrázek
     cv2.imwrite(TEST_OUTPUT_DIR + timeStamp + "_test_output_" + fileName, openCVImage)
+# end function
+
+#######################################################################################################################
+def zapsatVysledkyDoExcelu():
+
+
+    # Some data we want to write to the worksheet.
+    nastaveniKzapsaniDoSouboru = (
+        [ziskatNazevPromenne(HOW_MANY_TRAINING_STEPS), HOW_MANY_TRAINING_STEPS],
+        [ziskatNazevPromenne(LEARNING_RATE), LEARNING_RATE],
+        [ziskatNazevPromenne(TESTING_PERCENTAGE), TESTING_PERCENTAGE],
+        [ziskatNazevPromenne(VALIDATION_PERCENTAGE), VALIDATION_PERCENTAGE],
+        [ziskatNazevPromenne(EVAL_STEP_INTERVAL), EVAL_STEP_INTERVAL],
+        [ziskatNazevPromenne(TRAIN_BATCH_SIZE), TRAIN_BATCH_SIZE],
+        [ziskatNazevPromenne(TEST_BATCH_SIZE), TEST_BATCH_SIZE],
+        [ziskatNazevPromenne(VALIDATION_BATCH_SIZE), VALIDATION_BATCH_SIZE],
+        [ziskatNazevPromenne(FLIP_LEFT_RIGHT), FLIP_LEFT_RIGHT],
+        [ziskatNazevPromenne(RANDOM_CROP), RANDOM_CROP],
+        [ziskatNazevPromenne(RANDOM_SCALE), RANDOM_SCALE],
+        [ziskatNazevPromenne(RANDOM_BRIGHTNESS), RANDOM_BRIGHTNESS],
+        [ziskatNazevPromenne(ARCHITECTURE), ARCHITECTURE]
+    )
+
+    nazevSouboru = TRAINING_OUTPUT_DIR + "/" + "traning_settings.xlsx"
+
+    zapsatJakoExcel(nastaveniKzapsaniDoSouboru, nazevSouboru)
 # end function
 
 #######################################################################################################################
