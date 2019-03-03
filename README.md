@@ -1,7 +1,27 @@
-﻿VI1 projekt – klasifikace metodou Transfer Learning
+VI1 projekt – klasifikace metodou Transfer Learning
 =====================================================
-
 **Cílem projektu je automatické rozpoznání, zda rentgenový snímek patří do kategorie RA (snímky rukou s revmatoidní artritidou) nebo Bez RA (mohou občas vypadat podobně, ale artritidu nemají). K tomuto účelu je kvůli omezenému množství dat použit _modul pro extrakci rysů obrázku_ založený na předtrénované neuronce Inception V3, ke které se pouze dotrénuje poslední vrstva (tzv. bottleneck).** 
+
+Obsah
+---------
+
+VI1 projekt – klasifikace metodou Transfer Learning
+  * K úspěšnému spuštění je potřeba
+  * Předzpracování snímků – nutný převod na jpg
+  * Ovládání programu
+    + Struktura složek
+      - 1_training_input_images
+      - 2_bottleneck_data
+      - 2_training_chache
+      - 2_training_output
+      - 4_test_input_images
+      - 5_test_chache
+      - 6_test_output
+    + Spuštění programu
+    + Před spuštěním učení (soubor retrain.py)
+  +   Spuštění přes příkazovou řádku (nebo záložku Terminal v PyCharmu)
+    + Spuštění TensorBoard pro sledování statistik procesu učení
+  * Hodilo by se
 
 K úspěšnému spuštění je potřeba
 ---------
@@ -46,9 +66,6 @@ následně ho sputit příkazem
 sh DCMtoJPG.sh
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Ovládání programu 
 ---------
@@ -107,9 +124,6 @@ pravděpodobnost. Dále obsahuje souhrn výsledků testu v Excelovské tabulce.
 
 -   Testování – otevřít a sputit soubor test.py
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ### Před spuštěním učení (soubor retrain.py)
 
@@ -130,7 +144,7 @@ pravděpodobnost. Dále obsahuje souhrn výsledků testu v Excelovské tabulce.
     testování, protože práci neuronky má smysl testovat jen na snímcích, které
     ještě neviděla). Při větších zásazích do snímků nutno smazat celou složku.
 
-### Spouštění přes příkazovou řádku (nebo záložku Terminal v PyCharmu)
+### Spuštění přes příkazovou řádku (nebo záložku Terminal v PyCharmu)
 
 **Windows (funkční kromě předávání parametrů)**
 
@@ -191,13 +205,13 @@ Hodilo by se
 - [x] Aby _test.py_ automaticky projel všechny testovací snímky ve složce najednou bez zásahu uživatele
 - [x] Ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
 
+**Výstupy do Excelu**
+- [ ] Nastavit jako desetinny oddelovat carku namisto tecky
+- [ ] Vypis pravdepodobnosti pro jednotlive kategorie jednotne radit a naformatovat = dostat kategorie do zahlavi a do tabulky jen procenta
+
 **Technické a funkční záležitosti**
 - [ ] Rozjet spouštění přes příkazovou řádku – i s možností udělat několik spuštění za sebou a výsledky zaznamenávat do oddělených složek a souborů (tak aby se nepřepisovaly) + souhrnně do jedné přehledné tabulky
 - [X] Rozjet tensorboard (na Linuxu splněno, na Windows asi ztráta času)
 - [ ] Porovnat současné fungování Tensorboard s původní sktrukturou složek a ověřit jeho správnou funkčnost
 - [x] Automatické mazaní logů před spuštěním učení nebo testování
 - [ ] Možnost automatického mazaní složky _2_bottleneck_data_
-
-**Výstupy do Excelu**
-- [ ] Nastavit jako desetinny oddelovat carku namisto tecky
-- [ ] Vypis pravdepodobnosti pro jednotlive kategorie jednotne radit a naformatovat = dostat kategorie do zahlavi a do tabulky jen procenta
