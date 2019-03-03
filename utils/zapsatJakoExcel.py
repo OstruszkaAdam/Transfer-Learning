@@ -21,6 +21,9 @@ def zapsatPoleJakoExcel(poleKzapisu, nazevSouboru):
 
 
 def zapsatPolePoliJakoExcel(PoleZahlavi, poleKzapisu, nazevSouboru):
+    # TODO nastavit jako desetinny oddelovat carku namisto tecky
+
+    # TODO vypis pravdepodobnosti pro jednotlive kategorie jednotne radit a naformatovat = dostat kategorie do zahlavi a do tabulky jen procenta
 
     # Create a workbook and add a worksheet.
     workbook = xlsxwriter.Workbook(nazevSouboru + ".xlsx")

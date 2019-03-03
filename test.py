@@ -28,25 +28,21 @@ LABEL_FONT_COLOR = (255.0, 255.0, 255.0)   # bila
 # LABEL_FONT_COLOR = (0.0, 0.0, 255.0)     # cervena
 # LABEL_FONT_COLOR = (255.0, 0.0, 0.0)     # modra
 
-# pokud je nastaveno na 1, otestuje program vsechny snimky najednou
-# pokud je nastaveno na 0, program pred prechodem na dalsi snimek ceka na stisknuti libovolne klavesy
-TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE = 0
+# pokud je nastaveno na False, otestuje program vsechny snimky najednou
+# pokud je nastaveno na True, program pred prechodem na dalsi snimek ceka na stisknuti libovolne klavesy
+PROCHAZET_SNIMKY_JEDNOTLIVE = False
 
 #######################################################################################################################
-
-# TODO výpis výstupu do souboru předělat čistěji, aby v kódu nebyly zdvojené řádky
-
-# TODO ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
 
 def main():
     # aktualni cas a datum pro pouziti v nazvech vystupnich souboru
     timeStamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 
-    # otevreni (pripadne vytvoreni) souboru na ukladani vystupu z konzole
+    # vytvoreni slozky na ukladani vystupu z konzole
     outputSubirectoryName = TEST_OUTPUT_DIR + "/" + timeStamp + "_test_output_results"
     tf.gfile.MakeDirs(outputSubirectoryName)
 
-    outputFile = open(outputSubirectoryName + "/" + timeStamp + "_test_output_results.txt", "w+") # a = pripsat na konec, w = pripsat
+    # vytvoreni nazvu souboru s vystupy testu
     nazevExcelovskehoSouboru = outputSubirectoryName + "/" + timeStamp + "_test_output_results"
 
     print("probiha spousteni programu . . .")
@@ -84,6 +80,7 @@ def main():
         return
     # end if
 
+    # inicializace pole pro ukladani vysledku testu
     vsechnyRadkyKzapisuDoExcelu = []
     zahlaviKzapisuDoExcelu = ["nazev souboru", "zarazeno do kategorie", "se spolehlivosti [%]", "kat1", "kat2", "kat3", "kat4", "kat5", "kat6"]
 
@@ -97,11 +94,9 @@ def main():
             # end if
 
             print("-----------------------------------------------------------------")
-            outputFile.write("\n-----------------------------------------------------------------")
             jedenRadekKzapisuDoExcelu = []
             # show the file name on std out
             print("zpracovava se soubor " + fileName)
-            outputFile.write("\nzpracovava se soubor " + fileName)
             jedenRadekKzapisuDoExcelu.append(fileName)
 
             # get the file name and full path of the current image file
@@ -112,7 +107,6 @@ def main():
             # if we were not able to successfully open the image, continue with the next iteration of the for loop
             if openCVImage is None:
                 print("unable to open " + fileName + " as an OpenCV image")
-                outputFile.write("\nunable to open " + fileName + " as an OpenCV image")
                 jedenRadekKzapisuDoExcelu.append("unable to open")
                 continue
             # end if
@@ -150,7 +144,6 @@ def main():
                     scoreAsAPercent = confidence * 100.0
                     # show the result to std out
                     print("program zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
-                    outputFile.write("\nprogram zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     jedenRadekKzapisuDoExcelu.append(strClassification)
                     jedenRadekKzapisuDoExcelu.append("{0:.2f}".format(scoreAsAPercent))
                     # write the result on the image
@@ -164,17 +157,15 @@ def main():
 
                 # for any prediction, show the confidence as a ratio to five decimal places
                 print(strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
-                outputFile.write("\n" + strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
                 jedenRadekKzapisuDoExcelu.append(strClassification + " (" + "{0:.5f}".format(confidence) + ")")
-                print(jedenRadekKzapisuDoExcelu)
+
             # end for
             print("\n")
-            outputFile.write("\n")
 
             vsechnyRadkyKzapisuDoExcelu.append(jedenRadekKzapisuDoExcelu)
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
-            if TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE:
+            if PROCHAZET_SNIMKY_JEDNOTLIVE:
                 cv2.waitKey()
             # after a key is pressed, close the current window to prep for the next time around
             cv2.destroyAllWindows()
@@ -189,9 +180,7 @@ def main():
     tfFileWriter.add_graph(sess.graph)
     tfFileWriter.close()
 
-    #zavreni textoveho souboru, kam se ukladaly konzolove vypisy
-    outputFile.close()
-
+    # poslat k zapsani do Excelu vyplnene pole s vysledku testu pro vsechny snimky
     zapsatPolePoliJakoExcel(zahlaviKzapisuDoExcelu, vsechnyRadkyKzapisuDoExcelu, nazevExcelovskehoSouboru)
 
 # end main

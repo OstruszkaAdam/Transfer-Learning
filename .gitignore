@@ -16,3 +16,4 @@ output_labels.txt
 retrained_graph.pb
 retrained_labels.txt
 4_test_input_images/desktop.ini
+utils/__pycache__/
