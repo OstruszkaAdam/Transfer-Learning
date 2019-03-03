@@ -51,7 +51,7 @@ from tensorflow.python.framework import tensor_shape
 from tensorflow.python.platform import gfile
 from tensorflow.python.util import compat
 
-from utils.zapsatJakoExcel import zapsatJakoExcel
+from utils.zapsatJakoExcel import zapsatPoleJakoExcel
 
 # module level variables ##############################################################################################
 MIN_NUM_IMAGES_REQUIRED_FOR_TRAINING = 5
@@ -1314,9 +1314,9 @@ def zapsatNastaveniDoExcelu():
         [ziskatNazevPromenne(ARCHITECTURE), ARCHITECTURE]
     )
 
-    nazevSouboru = TRAINING_OUTPUT_DIR + "/" + "traning_settings.xlsx"
+    nazevSouboru = TRAINING_OUTPUT_DIR + "/" + "traning_settings"
 
-    zapsatJakoExcel(nastaveniKzapsaniDoSouboru, nazevSouboru)
+    zapsatPoleJakoExcel(nastaveniKzapsaniDoSouboru, nazevSouboru)
 # end function
 
 #######################################################################################################################

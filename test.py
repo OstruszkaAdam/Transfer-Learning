@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-from utils.zapsatJakoExcel import zapsatJakoExcel
+from utils.zapsatJakoExcel import zapsatPolePoliJakoExcel
 
 # module-level variables ##############################################################################################
 TRAINING_OUTPUT_DIR = os.getcwd() + "/3_training_output"
@@ -43,7 +43,11 @@ def main():
     timeStamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 
     # otevreni (pripadne vytvoreni) souboru na ukladani vystupu z konzole
-    outputFile = open(TEST_OUTPUT_DIR + timeStamp + "_test_output_results.txt", "w+") # a = pripsat na konec, w = pripsat
+    outputSubirectoryName = TEST_OUTPUT_DIR + "/" + timeStamp + "_test_output_results"
+    tf.gfile.MakeDirs(outputSubirectoryName)
+
+    outputFile = open(outputSubirectoryName + "/" + timeStamp + "_test_output_results.txt", "w+") # a = pripsat na konec, w = pripsat
+    nazevExcelovskehoSouboru = outputSubirectoryName + "/" + timeStamp + "_test_output_results"
 
     print("probiha spousteni programu . . .")
 
@@ -80,6 +84,9 @@ def main():
         return
     # end if
 
+    vsechnyRadkyKzapisuDoExcelu = []
+    zahlaviKzapisuDoExcelu = ["nazev souboru", "zarazeno do kategorie", "se spolehlivosti [%]", "kat1", "kat2", "kat3", "kat4", "kat5", "kat6"]
+
     with tf.Session() as sess:
 
         # for each file in the test images directory . . .
@@ -91,10 +98,11 @@ def main():
 
             print("-----------------------------------------------------------------")
             outputFile.write("\n-----------------------------------------------------------------")
-
+            jedenRadekKzapisuDoExcelu = []
             # show the file name on std out
             print("zpracovava se soubor " + fileName)
             outputFile.write("\nzpracovava se soubor " + fileName)
+            jedenRadekKzapisuDoExcelu.append(fileName)
 
             # get the file name and full path of the current image file
             imageFileWithPath = os.path.join(TEST_INPUT_IMAGES_DIR, fileName)
@@ -105,6 +113,7 @@ def main():
             if openCVImage is None:
                 print("unable to open " + fileName + " as an OpenCV image")
                 outputFile.write("\nunable to open " + fileName + " as an OpenCV image")
+                jedenRadekKzapisuDoExcelu.append("unable to open")
                 continue
             # end if
 
@@ -142,8 +151,10 @@ def main():
                     # show the result to std out
                     print("program zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     outputFile.write("\nprogram zaradil snimek do kategorie " + strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
+                    jedenRadekKzapisuDoExcelu.append(strClassification)
+                    jedenRadekKzapisuDoExcelu.append("{0:.2f}".format(scoreAsAPercent))
                     # write the result on the image
-                    writeResultOnImage(openCVImage, timeStamp, fileName, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
+                    writeResultOnImage(outputSubirectoryName,openCVImage, timeStamp, fileName, strClassification + " (" + "{0:.2f}".format(scoreAsAPercent) + "% confidence)")
                     # finally we can show the OpenCV image
                     cv2.imshow(fileName, openCVImage)
                     # mark that we've show the most likely prediction at this point so the additional information in
@@ -154,9 +165,13 @@ def main():
                 # for any prediction, show the confidence as a ratio to five decimal places
                 print(strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
                 outputFile.write("\n" + strClassification + " (" +  "{0:.5f}".format(confidence) + ")")
+                jedenRadekKzapisuDoExcelu.append(strClassification + " (" + "{0:.5f}".format(confidence) + ")")
+                print(jedenRadekKzapisuDoExcelu)
             # end for
             print("\n")
             outputFile.write("\n")
+
+            vsechnyRadkyKzapisuDoExcelu.append(jedenRadekKzapisuDoExcelu)
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
             if TEST_ALL_WITHOUT_WAITING_FOR_USER_RESPONSE:
@@ -176,6 +191,8 @@ def main():
 
     #zavreni textoveho souboru, kam se ukladaly konzolove vypisy
     outputFile.close()
+
+    zapsatPolePoliJakoExcel(zahlaviKzapisuDoExcelu, vsechnyRadkyKzapisuDoExcelu, nazevExcelovskehoSouboru)
 
 # end main
 
@@ -218,7 +235,7 @@ def checkIfNecessaryPathsAndFilesExist():
 # end function
 
 #######################################################################################################################
-def writeResultOnImage(openCVImage, timeStamp, fileName, resultText):
+def writeResultOnImage(outputDirectoryName, openCVImage, timeStamp, fileName, resultText):
     # TODO: this function may take some further fine-tuning to show the text well given any possible image size
 
     imageHeight, imageWidth, sceneNumChannels = openCVImage.shape
@@ -252,33 +269,7 @@ def writeResultOnImage(openCVImage, timeStamp, fileName, resultText):
     cv2.putText(openCVImage, resultText, (lowerLeftTextOriginX, lowerLeftTextOriginY), fontFace, fontScale, LABEL_FONT_COLOR, fontThickness, cv2.LINE_AA)
 
     # uložit výstupní obrázek
-    cv2.imwrite(TEST_OUTPUT_DIR + timeStamp + "_test_output_" + fileName, openCVImage)
-# end function
-
-#######################################################################################################################
-def zapsatVysledkyDoExcelu():
-
-
-    # Some data we want to write to the worksheet.
-    nastaveniKzapsaniDoSouboru = (
-        [ziskatNazevPromenne(HOW_MANY_TRAINING_STEPS), HOW_MANY_TRAINING_STEPS],
-        [ziskatNazevPromenne(LEARNING_RATE), LEARNING_RATE],
-        [ziskatNazevPromenne(TESTING_PERCENTAGE), TESTING_PERCENTAGE],
-        [ziskatNazevPromenne(VALIDATION_PERCENTAGE), VALIDATION_PERCENTAGE],
-        [ziskatNazevPromenne(EVAL_STEP_INTERVAL), EVAL_STEP_INTERVAL],
-        [ziskatNazevPromenne(TRAIN_BATCH_SIZE), TRAIN_BATCH_SIZE],
-        [ziskatNazevPromenne(TEST_BATCH_SIZE), TEST_BATCH_SIZE],
-        [ziskatNazevPromenne(VALIDATION_BATCH_SIZE), VALIDATION_BATCH_SIZE],
-        [ziskatNazevPromenne(FLIP_LEFT_RIGHT), FLIP_LEFT_RIGHT],
-        [ziskatNazevPromenne(RANDOM_CROP), RANDOM_CROP],
-        [ziskatNazevPromenne(RANDOM_SCALE), RANDOM_SCALE],
-        [ziskatNazevPromenne(RANDOM_BRIGHTNESS), RANDOM_BRIGHTNESS],
-        [ziskatNazevPromenne(ARCHITECTURE), ARCHITECTURE]
-    )
-
-    nazevSouboru = TRAINING_OUTPUT_DIR + "/" + "traning_settings.xlsx"
-
-    zapsatJakoExcel(nastaveniKzapsaniDoSouboru, nazevSouboru)
+    cv2.imwrite(outputDirectoryName + "/" + timeStamp + "_test_output_" + fileName, openCVImage)
 # end function
 
 #######################################################################################################################

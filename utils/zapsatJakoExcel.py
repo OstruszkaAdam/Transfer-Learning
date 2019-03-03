@@ -1,9 +1,7 @@
 import xlsxwriter
 
-
-def zapsatJakoExcel(poleKzapisu, nazevSouboru):
+def zapsatPoleJakoExcel(poleKzapisu, nazevSouboru):
     # Some data we want to write to the worksheet.
-
 
     # Create a workbook and add a worksheet.
     workbook = xlsxwriter.Workbook(nazevSouboru + ".xlsx")
@@ -19,4 +17,28 @@ def zapsatJakoExcel(poleKzapisu, nazevSouboru):
     # # Write a total using a formula.
     # worksheet.write(row, 0, 'Total')
     # worksheet.write(row, 1, '=SUM(B1:B4)')
+    workbook.close()
+
+
+def zapsatPolePoliJakoExcel(PoleZahlavi, poleKzapisu, nazevSouboru):
+
+    # Create a workbook and add a worksheet.
+    workbook = xlsxwriter.Workbook(nazevSouboru + ".xlsx")
+    worksheet = workbook.add_worksheet()
+
+    # Add a bold format to use to highlight cells.
+    bold = workbook.add_format({'bold': True})
+
+    # Oddeleny zapis zahlavi tabulky
+    for sloupecKzapisu in range(len(PoleZahlavi)):
+        worksheet.write(0, sloupecKzapisu, PoleZahlavi[sloupecKzapisu], bold)
+    # end for
+
+    # Zapis vysledku testu
+    for radekKzapisu in range(len(poleKzapisu)):
+        for sloupecKzapisu in range(len(poleKzapisu[radekKzapisu])):
+            worksheet.write(radekKzapisu +1, sloupecKzapisu, poleKzapisu[radekKzapisu][sloupecKzapisu])
+        # end for
+    # end for
+
     workbook.close()
