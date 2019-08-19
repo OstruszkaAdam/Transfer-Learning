@@ -20,7 +20,7 @@ def saveArrayAsExcel(poleKzapisu, nazevSouboru):
     workbook.close()
 
 
-def zapsatPolePoliJakoExcel(PoleZahlavi, poleKzapisu, nazevSouboru):
+def saveNestedArrayAsExcel(PoleZahlavi, poleKzapisu, nazevSouboru):
     # TODO nastavit jako desetinny oddelovat carku namisto tecky
 
     # TODO vypis pravdepodobnosti pro jednotlive kategorie jednotne radit a naformatovat = dostat kategorie do zahlavi a do tabulky jen procenta

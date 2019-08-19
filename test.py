@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-from utils.saveOutputAsExcel import zapsatPolePoliJakoExcel
+from utils.saveOutputAsExcel import saveNestedArrayAsExcel
 
 # module-level variables ##############################################################################################
 TRAINING_OUTPUT_DIR = os.getcwd() + "/3_training_output"
@@ -22,8 +22,9 @@ TEST_INPUT_IMAGES_DIR = os.getcwd() + "/4_test_input_images"
 TEST_OUTPUT_DIR = os.getcwd() + "/6_test_output/"
 
 # ATTENTION: In OpenCV, colors are not in RGB order, but in BGR instead.
-LABEL_FONT_COLOR = (255.0, 255.0, 255.0)   # bila
-# LABEL_FONT_COLOR = (0.0, 165.0, 255.0)   # oranzova
+
+LABEL_FONT_COLOR = (0.0, 165.0, 255.0)   # oranzova
+# LABEL_FONT_COLOR = (255.0, 255.0, 255.0)   # bila
 # LABEL_FONT_COLOR = (0.0, 0.0, 255.0)     # cervena
 # LABEL_FONT_COLOR = (255.0, 0.0, 0.0)     # modra
 
@@ -42,7 +43,7 @@ def main():
     tf.gfile.MakeDirs(outputSubirectoryName)
 
     # create a name for the output file with test results
-    nazevExcelovskehoSouboru = outputSubirectoryName + "/" + timeStamp + "_test_output_results"
+    tableName = outputSubirectoryName + "/" + timeStamp + "_test_output_results"
 
     print("starting program . . .")
 
@@ -80,8 +81,8 @@ def main():
     # end if
 
     # inicialization of the array to save all the results
-    vsechnyRadkyKzapisuDoExcelu = []
-    zahlaviKzapisuDoExcelu = ["nazev souboru", "zarazeno do kategorie", "se spolehlivosti [%]", "kat1", "kat2", "kat3", "kat4", "kat5", "kat6"]
+    tableRows = []
+    tableHeader = ["nazev souboru", "zarazeno do kategorie", "se spolehlivosti [%]", "kat1", "kat2", "kat3", "kat4", "kat5", "kat6"]
 
     with tf.Session() as sess:
 
@@ -161,7 +162,7 @@ def main():
             # end for
             print("\n")
 
-            vsechnyRadkyKzapisuDoExcelu.append(jedenRadekKzapisuDoExcelu)
+            tableRows.append(jedenRadekKzapisuDoExcelu)
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
             if BROWSE_IMAGES_SEPARATELY:
@@ -179,8 +180,8 @@ def main():
     tfFileWriter.add_graph(sess.graph)
     tfFileWriter.close()
 
-    # poslat k zapsani do Excelu vyplnene pole s vysledku testu pro vsechny snimky
-    zapsatPolePoliJakoExcel(zahlaviKzapisuDoExcelu, vsechnyRadkyKzapisuDoExcelu, nazevExcelovskehoSouboru)
+    # send to Excel an array with test results for all images
+    saveNestedArrayAsExcel(tableHeader, tableRows, tableName)
 
 # end main
 

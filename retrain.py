@@ -1243,26 +1243,6 @@ def getVariableName(variable):
       return m.group(1)
 # end function
 
-
-#######################################################################################################################
-# def zapsatNastaveniDoSouboru():
-#     outputFile = open(TRAINING_OUTPUT_DIR + "/" + "traning_settings.txt", "w+") # a = pripsat na konec, w = pripsat
-#     outputFile.write(ziskatNazevPromenne(HOW_MANY_TRAINING_STEPS) + " = " + str(HOW_MANY_TRAINING_STEPS) + "\n")
-#     outputFile.write(ziskatNazevPromenne(LEARNING_RATE) + " = " + str(LEARNING_RATE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(TESTING_PERCENTAGE) + " = " + str(TESTING_PERCENTAGE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(VALIDATION_PERCENTAGE) + " = " + str(VALIDATION_PERCENTAGE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(EVAL_STEP_INTERVAL) + " = " + str(EVAL_STEP_INTERVAL) + "\n")
-#     outputFile.write(ziskatNazevPromenne(TRAIN_BATCH_SIZE) + " = " + str(TRAIN_BATCH_SIZE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(TEST_BATCH_SIZE) + " = " + str(TEST_BATCH_SIZE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(VALIDATION_BATCH_SIZE) + " = " + str(VALIDATION_BATCH_SIZE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(FLIP_LEFT_RIGHT) + " = " + str(FLIP_LEFT_RIGHT) + "\n")
-#     outputFile.write(ziskatNazevPromenne(RANDOM_CROP) + " = " + str(RANDOM_CROP) + "\n")
-#     outputFile.write(ziskatNazevPromenne(RANDOM_SCALE) + " = " + str(RANDOM_SCALE) + "\n")
-#     outputFile.write(ziskatNazevPromenne(RANDOM_BRIGHTNESS) + " = " + str(RANDOM_BRIGHTNESS) + "\n")
-#     outputFile.write(ziskatNazevPromenne(ARCHITECTURE) + " = " + str(ARCHITECTURE) + "\n")
-#     outputFile.close()
-# end function
-
 #######################################################################################################################
 def writeSettingsOfTrainingToExcelFile():
 
