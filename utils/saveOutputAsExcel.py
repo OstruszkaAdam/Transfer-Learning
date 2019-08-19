@@ -1,6 +1,6 @@
 import xlsxwriter
 
-def zapsatPoleJakoExcel(poleKzapisu, nazevSouboru):
+def saveArrayAsExcel(poleKzapisu, nazevSouboru):
     # Some data we want to write to the worksheet.
 
     # Create a workbook and add a worksheet.

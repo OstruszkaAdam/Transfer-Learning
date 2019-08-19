@@ -1,35 +1,5 @@
 # retrain.py
-#
-# original file by Google:
-# puvodni, nefunkcni odkaz: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/examples/image_retraining/retrain.py
-# novy a funkcni odkaz: https://github.com/tensorflow/hub/blob/master/examples/image_retraining/retrain.py
 
-# k tomuto souboru se dale vaze stranka:
-# https://www.tensorflow.org/hub/tutorials/image_retraining
-
-# a jeji novejsi verze:
-# https://codelabs.developers.google.com/codelabs/tensorflow-for-poets/#0
-
-"""
-Transfer learning with Inception v3 or Mobilenet models.
-
-This example shows how to take a Inception v3 or Mobilenet model trained on ImageNet images,
-and train a new top layer that can recognize other classes of images.
-
-The top layer receives as input a 2048-dimensional vector (1001-dimensional for Mobilenet) for each image. We train a
-softmax layer on top of this representation. Assuming the softmax layer contains N labels, this corresponds to
-learning N + 2048*N (or 1001*N)  model parameters corresponding to the learned biases and weights.
-
-You can replace the image_dir argument with any folder containing subfolders of images. The label for each image is
-taken from the name of the subfolder it's in.
-
-This produces a new model file that can be loaded and run by any TensorFlow program, for example the label_image sample code.
-
-To use with TensorBoard:
-tensorboard --logdir /path/to/tensorboard_logs
-
-tensorboard --logdir /home/ubuntu/PycharmProjects/Transfer-Learning/2_training_chache/tensorboard_logs
-"""
 import inspect
 import shutil
 from datetime import datetime
@@ -51,7 +21,7 @@ from tensorflow.python.framework import tensor_shape
 from tensorflow.python.platform import gfile
 from tensorflow.python.util import compat
 
-from utils.zapsatJakoExcel import zapsatPoleJakoExcel
+from utils.saveOutputAsExcel import saveArrayAsExcel
 
 # module level variables ##############################################################################################
 MIN_NUM_IMAGES_REQUIRED_FOR_TRAINING = 5
@@ -87,7 +57,7 @@ TENSORBOARD_TRAINING_LOGS_DIR = os.getcwd() + '/' + '2_training_chache/tensorboa
 # how many training steps to run before ending
 # NOTE: original Google default is 4000, use 4000 (or possibly higher) for production grade results
 HOW_MANY_TRAINING_STEPS=1
-# kroky jsou cislovany od 0 do n-1
+# steps are numbered from 0 to n-1
 
 # how large a learning rate to use when training
 LEARNING_RATE = 0.01
@@ -185,7 +155,7 @@ def main():
     # end if
 
     # zapsatNastaveniDoSouboru()
-    zapsatNastaveniDoExcelu()
+    writeSettingsOfTrainingToExcelFile()
 
     # download the model if necessary, then create the model graph
     print("downloading model (if necessary) . . .")
@@ -206,7 +176,7 @@ def main():
         return -1
     # end if
 
-    # determinf if any of the distortion command line flags have been set
+    # determine if any of the distortion command line flags have been set
     doDistortImages = False
     if (FLIP_LEFT_RIGHT == True or RANDOM_CROP != 0 or RANDOM_SCALE != 0 or RANDOM_BRIGHTNESS != 0):
         doDistortImages = True
@@ -324,13 +294,13 @@ def main():
         # end if
 
         # write out the trained graph and labels with the weights stored as constants
-        print("writing trained graph and labbels with weights")
+        print("writing trained graph and labels with weights")
         save_graph_to_file(sess, graph, OUTPUT_GRAPH)
         with gfile.FastGFile(OUTPUT_LABELS, 'w') as f:
             f.write('\n'.join(image_lists.keys()) + '\n')
         # end with
 
-        print("done !!")
+        print("done !")
 # end function
 
 #######################################################################################################################
@@ -653,7 +623,7 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
         # end if
 
         # TODO: This section should be refactored. The right way to do this would be to get a list of the files that are
-        #  there then append (extend) those, not to get the name except the extension, then append an extension,
+        #  there, then append (extend) those, not to get the name except the extension, then append an extension,
         #  this (current) way is error prone of the original file has an upper case or mixed case extension
 
         extensions = ['jpg', 'jpeg']
@@ -666,7 +636,7 @@ def create_image_lists(image_dir, testing_percentage, validation_percentage):
 
         # if the file list is empty at this point, log a warning and bail
         if not file_list:
-            tf.logging.warning('No files found')
+            tf.logging.warning('No images found')
             continue
         # end if
 
@@ -1266,9 +1236,9 @@ def save_graph_to_file(sess, graph, graph_file_name):
 # end function
 
 #######################################################################################################################
-def ziskatNazevPromenne(promenna):
+def getVariableName(variable):
   for line in inspect.getframeinfo(inspect.currentframe().f_back)[3]:
-    m = re.search(r'\bziskatNazevPromenne\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)', line)
+    m = re.search(r'\bgetVariableName\s*\(\s*([A-Za-z_][A-Za-z0-9_]*)\s*\)', line)
     if m:
       return m.group(1)
 # end function
@@ -1294,29 +1264,29 @@ def ziskatNazevPromenne(promenna):
 # end function
 
 #######################################################################################################################
-def zapsatNastaveniDoExcelu():
+def writeSettingsOfTrainingToExcelFile():
 
 
-    # Some data we want to write to the worksheet.
-    nastaveniKzapsaniDoSouboru = (
-        [ziskatNazevPromenne(HOW_MANY_TRAINING_STEPS), HOW_MANY_TRAINING_STEPS],
-        [ziskatNazevPromenne(LEARNING_RATE), LEARNING_RATE],
-        [ziskatNazevPromenne(TESTING_PERCENTAGE), TESTING_PERCENTAGE],
-        [ziskatNazevPromenne(VALIDATION_PERCENTAGE), VALIDATION_PERCENTAGE],
-        [ziskatNazevPromenne(EVAL_STEP_INTERVAL), EVAL_STEP_INTERVAL],
-        [ziskatNazevPromenne(TRAIN_BATCH_SIZE), TRAIN_BATCH_SIZE],
-        [ziskatNazevPromenne(TEST_BATCH_SIZE), TEST_BATCH_SIZE],
-        [ziskatNazevPromenne(VALIDATION_BATCH_SIZE), VALIDATION_BATCH_SIZE],
-        [ziskatNazevPromenne(FLIP_LEFT_RIGHT), FLIP_LEFT_RIGHT],
-        [ziskatNazevPromenne(RANDOM_CROP), RANDOM_CROP],
-        [ziskatNazevPromenne(RANDOM_SCALE), RANDOM_SCALE],
-        [ziskatNazevPromenne(RANDOM_BRIGHTNESS), RANDOM_BRIGHTNESS],
-        [ziskatNazevPromenne(ARCHITECTURE), ARCHITECTURE]
+    # The data we want to write to the Excel worksheet.
+    seetingsToBeWrittenToExcelFile = (
+        [getVariableName(HOW_MANY_TRAINING_STEPS), HOW_MANY_TRAINING_STEPS],
+        [getVariableName(LEARNING_RATE), LEARNING_RATE],
+        [getVariableName(TESTING_PERCENTAGE), TESTING_PERCENTAGE],
+        [getVariableName(VALIDATION_PERCENTAGE), VALIDATION_PERCENTAGE],
+        [getVariableName(EVAL_STEP_INTERVAL), EVAL_STEP_INTERVAL],
+        [getVariableName(TRAIN_BATCH_SIZE), TRAIN_BATCH_SIZE],
+        [getVariableName(TEST_BATCH_SIZE), TEST_BATCH_SIZE],
+        [getVariableName(VALIDATION_BATCH_SIZE), VALIDATION_BATCH_SIZE],
+        [getVariableName(FLIP_LEFT_RIGHT), FLIP_LEFT_RIGHT],
+        [getVariableName(RANDOM_CROP), RANDOM_CROP],
+        [getVariableName(RANDOM_SCALE), RANDOM_SCALE],
+        [getVariableName(RANDOM_BRIGHTNESS), RANDOM_BRIGHTNESS],
+        [getVariableName(ARCHITECTURE), ARCHITECTURE]
     )
 
-    nazevSouboru = TRAINING_OUTPUT_DIR + "/" + "traning_settings"
+    excelFileName = TRAINING_OUTPUT_DIR + "/" + "traning_settings"
 
-    zapsatPoleJakoExcel(nastaveniKzapsaniDoSouboru, nazevSouboru)
+    saveArrayAsExcel(seetingsToBeWrittenToExcelFile, excelFileName)
 # end function
 
 #######################################################################################################################

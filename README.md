@@ -1,11 +1,15 @@
-VI1 projekt – klasifikace metodou Transfer Learning
+Využití metody transfer learning pro klasifikaci RTG snímků 
 =====================================================
-**Cílem projektu je automatické rozpoznání, zda rentgenový snímek patří do kategorie RA (snímky rukou s revmatoidní artritidou) nebo Bez RA (mohou občas vypadat podobně, ale artritidu nemají). K tomuto účelu je kvůli omezenému množství dat použit _modul pro extrakci rysů obrázku_ založený na předtrénované neuronce Inception V3, ke které se pouze dotrénuje poslední vrstva (tzv. bottleneck).** 
+**Cílem projektu je automatické rozpoznání, zda rentgenový snímek patří
+do kategorie RA (snímky rukou s revmatoidní artritidou) nebo Bez RA
+(mohou občas vypadat podobně, ale artritidu nemají). K tomuto účelu je
+kvůli omezenému množství dat použit _modul pro extrakci rysů obrázku_
+založený na částečně předtrénované neuronce Inception V3.**
 
 Obsah
 ---------
 
-VI1 projekt – klasifikace metodou Transfer Learning
+Využití metody transfer learning pro klasifikaci RTG snímků
   * K úspěšnému spuštění je potřeba
   * Předzpracování snímků – nutný převod na jpg
   * Ovládání programu
@@ -13,7 +17,7 @@ VI1 projekt – klasifikace metodou Transfer Learning
       - 1_training_input_images
       - 2_bottleneck_data
       - 2_training_chache
-      - 2_training_output
+    -   3_training_output
       - 4_test_input_images
       - 5_test_chache
       - 6_test_output
@@ -21,7 +25,6 @@ VI1 projekt – klasifikace metodou Transfer Learning
     + Před spuštěním učení (soubor retrain.py)
   +   Spuštění přes příkazovou řádku (nebo záložku Terminal v PyCharmu)
     + Spuštění TensorBoard pro sledování statistik procesu učení
-  * Hodilo by se
 
 K úspěšnému spuštění je potřeba
 ---------
@@ -29,9 +32,10 @@ K úspěšnému spuštění je potřeba
 -   Python STARŠÍ než 3.7 (jinak tensorflow nefunguje – na novější verze Pythonu
     ho ještě nepřizpůsobili).
 
--   Úspěšně nainstalovaný balíček tensorflow, cv2 (openCV), numpy a xlsxwriter.
-    Při instalaci balíčku ne ručně, ale přes červenou žárovku v PyCharmu je
-    řádově větší pravděpodobnost, že to skončí úspěchem.
+-   Úspěšně nainstalovaný balíček tensorflow, cv2 (openCV), numpy a
+    xlsxwriter. Při instalaci balíčku ne ručně, ale přes červenou
+    žárovku v PyCharmu, je řádově větší pravděpodobnost, že to skončí
+    úspěchem.
 
 -   Na Windows hromada štěstí, kupa času a pevné nervy (hlavně při pokusech o
     instalaci balíčků).
@@ -44,12 +48,16 @@ K úspěšnému spuštění je potřeba
 Předzpracování snímků – nutný převod na jpg
 ---------
 
-Program prozatím umí zpracovat pouze formát jpg, což se zrovna pro
-medicínské použití nehodí, protože jpg je ztrátový formát. Při kvalitě 100% dochází ke ztrátě barevnosti. 
-Při nižší kvalitě navíc vytváří v obrazu kompresní artefakty (vlastně obrazce, které tam nikdy nebyly).
+Program prozatím umí zpracovat pouze formát jpg, což se na první pohled
+pro medicínské použití nehodí, protože jpg je ztrátový formát. Při
+kvalitě 100% dochází ke ztrátě barevnosti. Při nižší kvalitě by v obrazu
+vznikaly kompresní artefakty (vlastně obrazce, které tam nikdy nebyly).
+Na druhou stranu i velké online datasety jsou v jpg a navíc tento formát
+umožňuje nést s sebou kupu informací v EXIF metadatech.
 
-Na Windows jsou dostupné programy úplně nefunkční nebo placené a tím pádem
-funkční jen po dobu trvání trial verze.
+Pro převod z DCM to běžných formátů jsou na Windows dostupné programy
+úplně nefunkční nebo placené a tím pádem fungující jen po dobu trvání
+trial verze.
 
 Na Ubuntu Linuxu se jako nejvíc funkční možnost ukázal být vestavěný nástroj
 Morgify. Pro převedení všech souborů ve složce jsem napsal jednoduchý prográmek
@@ -72,10 +80,10 @@ Ovládání programu
 
 ### Struktura složek
 
-Řazení složek odpovídá tomu, jaká se posloupnost práce s daty. Google původně
-toto nijak neřešil a byl v tom zmatek, ale teď by to mělo být alespoň trochu
-intuitivní. Uživatel potřebuje věnovat pozornost pouze složkám 1 a 4, o zbytek
-složek se stará systém.
+Řazení složek odpovídá tomu, jaká je posloupnost práce s daty. Google
+původně toto nijak neřešil a byl v tom zmatek, ale teď by to mělo být
+alespoň trochu intuitivní. Uživatel potřebuje věnovat pozornost pouze
+složkám 1 a 4, o zbytek složek se stará systém.
 
 #### 1_training_input_images
 
@@ -98,7 +106,7 @@ k trénování (tzn. zde je umístěna samotná neuronka *inceptionV3*). Během
 se sem ukládají statistiky učícího procesu, které jsou zobrazitelné v nástroji
 TensorBoard.
 
-#### 2_training_output
+#### 3_training_output
 
 Sem se ukládají výstupy z procesu učení.
 Výsledný model, který po vytrénování slouží ke klasifikaci snímků, je v souboru _retrained_graph.pb_
@@ -111,7 +119,8 @@ Sem umístěte snímky, na kterých chcete otestovat již vytrénovanou neuronku
 
 #### 5_test_chache
 
-Během trénování se sem ukládají statistiky pro TensorBoard.
+Během trénování se sem ukládají statistiky pro nástroj TensorBoard,
+který je umí prohlížet a zobrazovat jako grafy.
 
 #### 6_test_output
 
@@ -137,12 +146,13 @@ pravděpodobnost. Dále obsahuje souhrn výsledků testu v Excelovské tabulce.
     VALIDATION_BATCH_SIZE (jejich bližší popis je přímo v kódu). Pokud je
     dostatek výpočetního výkonu, dát třeba 4000 a 2000 a -1.
 
--   Do složky *bottleneck_data* si program pro každou trénovací fotku ukládá
-    popisný vektor mající 2048 složek. Pokud jsme právě nepřesunuli nějaký
-    snímek z trénovacích do testovacích, můžeme obsah složky ponechat. Pokud
-    ano, je potřeba příslušný soubor s vektorem smazat (jinak zničíme princip
-    testování, protože práci neuronky má smysl testovat jen na snímcích, které
-    ještě neviděla). Při větších zásazích do snímků nutno smazat celou složku.
+-   Do složky *bottleneck_data* si program pro každou trénovací fotku
+    ukládá popisný vektor mající 2048 složek. Pokud jsme právě
+    nepřesunuli nějaký snímek z trénovacích do testovacích, můžeme obsah
+    složky ponechat. Pokud ano, je potřeba příslušný soubor s vektorem
+    smazat (jinak zničíme princip testování, protože práci neuronky má
+    smysl testovat jen na snímcích, které ještě neviděla). Při větších
+    zásazích do snímků je jednodušší smazat celou složku.
 
 ### Spuštění přes příkazovou řádku (nebo záložku Terminal v PyCharmu)
 
@@ -197,13 +207,16 @@ TensorBoard. Na Windows se mi TensorBoard rozjet nepodařilo.
 Hodilo by se
 ---------
 **Předzpracování snímků**
-- [ ] předělat skript na převod obrazových formátů tak, aby jako parametr přijímal cestu ke složce a šel spouštět odkudkoliv
+~~- [ ] předělat skript na převod obrazových formátů tak, aby jako parametr přijímal cestu ke složce a šel spouštět odkudkoliv~~
 - [ ] Pro zvýšení přesnosti klasifikace vyzkoušet předzpracování snímků (ořez, převrácení, expozici nastavit na default ještě u dicomu)
 - [ ] Zpracování alespoň souborů tiff (s automatickým převodem z dicomu) nebo ideálně přímo dicom
+- [ ] Kategorie pro trénování nebrat z názvů složek, ale z metadat
+      obrázků (tiff nebo jpg)
 
 **Testování snímků**
 - [x] Aby _test.py_ automaticky projel všechny testovací snímky ve složce najednou bez zásahu uživatele
-- [x] Ukládat výstupy jednotlivých testů do samostatných složek a výstupy formátovat tak, aby šly ve Wordu lehce převést na tabulku
+- [x] Ukládat výstupy jednotlivých testů do samostatných složek a
+      formátovat tak, aby šly v MS Office lehce převést na tabulku
 
 **Výstupy do Excelu**
 - [ ] Nastavit jako desetinny oddelovat carku namisto tecky

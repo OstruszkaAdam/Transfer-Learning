@@ -7,7 +7,7 @@ import tensorflow as tf
 import numpy as np
 import cv2
 
-from utils.zapsatJakoExcel import zapsatPolePoliJakoExcel
+from utils.saveOutputAsExcel import zapsatPolePoliJakoExcel
 
 # module-level variables ##############################################################################################
 TRAINING_OUTPUT_DIR = os.getcwd() + "/3_training_output"
@@ -21,31 +21,30 @@ TENSORBOARD_TEST_LOGS_DIR = os.getcwd() + '/' + '5_test_chache/tensorboard_logs'
 TEST_INPUT_IMAGES_DIR = os.getcwd() + "/4_test_input_images"
 TEST_OUTPUT_DIR = os.getcwd() + "/6_test_output/"
 
-# definovani, jakou barvu maji mit popisky fotek
-# POZOR: v OpenCV nejsou barvy v pořadí RGB, ale BGR
+# ATTENTION: In OpenCV, colors are not in RGB order, but in BGR instead.
 LABEL_FONT_COLOR = (255.0, 255.0, 255.0)   # bila
 # LABEL_FONT_COLOR = (0.0, 165.0, 255.0)   # oranzova
 # LABEL_FONT_COLOR = (0.0, 0.0, 255.0)     # cervena
 # LABEL_FONT_COLOR = (255.0, 0.0, 0.0)     # modra
 
-# pokud je nastaveno na False, otestuje program vsechny snimky najednou
-# pokud je nastaveno na True, program pred prechodem na dalsi snimek ceka na stisknuti libovolne klavesy
-PROCHAZET_SNIMKY_JEDNOTLIVE = False
+# if set to False, all images will be tested in one loop
+# if set to True, the current image will be shown in separate window and program will wait for the user to press any key to move to next pixture
+BROWSE_IMAGES_SEPARATELY = False
 
 #######################################################################################################################
 
 def main():
-    # aktualni cas a datum pro pouziti v nazvech vystupnich souboru
+    # current date and time to be used in filenames
     timeStamp = time.strftime("%Y-%m-%d_%H-%M-%S")
 
-    # vytvoreni slozky na ukladani vystupu z konzole
+    # creating a directory where console text outputs will be stored
     outputSubirectoryName = TEST_OUTPUT_DIR + "/" + timeStamp + "_test_output_results"
     tf.gfile.MakeDirs(outputSubirectoryName)
 
-    # vytvoreni nazvu souboru s vystupy testu
+    # create a name for the output file with test results
     nazevExcelovskehoSouboru = outputSubirectoryName + "/" + timeStamp + "_test_output_results"
 
-    print("probiha spousteni programu . . .")
+    print("starting program . . .")
 
     if not checkIfNecessaryPathsAndFilesExist():
         return
@@ -80,7 +79,7 @@ def main():
         return
     # end if
 
-    # inicializace pole pro ukladani vysledku testu
+    # inicialization of the array to save all the results
     vsechnyRadkyKzapisuDoExcelu = []
     zahlaviKzapisuDoExcelu = ["nazev souboru", "zarazeno do kategorie", "se spolehlivosti [%]", "kat1", "kat2", "kat3", "kat4", "kat5", "kat6"]
 
@@ -165,7 +164,7 @@ def main():
             vsechnyRadkyKzapisuDoExcelu.append(jedenRadekKzapisuDoExcelu)
 
             # pause until a key is pressed so the user can see the current image (shown above) and the prediction info
-            if PROCHAZET_SNIMKY_JEDNOTLIVE:
+            if BROWSE_IMAGES_SEPARATELY:
                 cv2.waitKey()
             # after a key is pressed, close the current window to prep for the next time around
             cv2.destroyAllWindows()
@@ -233,10 +232,10 @@ def writeResultOnImage(outputDirectoryName, openCVImage, timeStamp, fileName, re
     fontFace = cv2.FONT_HERSHEY_DUPLEX
 
     # chose the font size and thickness as a fraction of the image size
-    if (imageWidth > 500): # pro obrazky sirsi nez 500 px
-        fontScale = imageWidth/1000 + 0.7  # se velikost fontu vypocita podle sirky
-    else:  # jinak (pro obrazky mensi)
-        fontScale = 1.0  # se pouzije vychozi velikost fontu
+    if (imageWidth > 500): # for images wider than 500 px
+        fontScale = imageWidth/1000 + 0.7  # the font size depend on their width
+    else:  # for smaller images
+        fontScale = 1.0  # only one default font size is used
     #fontScale = 2.0
 
     fontThickness = 2
@@ -257,7 +256,7 @@ def writeResultOnImage(outputDirectoryName, openCVImage, timeStamp, fileName, re
     # write the text on the image
     cv2.putText(openCVImage, resultText, (lowerLeftTextOriginX, lowerLeftTextOriginY), fontFace, fontScale, LABEL_FONT_COLOR, fontThickness, cv2.LINE_AA)
 
-    # uložit výstupní obrázek
+    # save output image
     cv2.imwrite(outputDirectoryName + "/" + timeStamp + "_test_output_" + fileName, openCVImage)
 # end function
 
